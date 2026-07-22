@@ -1,42 +1,41 @@
 <!doctype html>
-<!--
-  GitHub Pages is case-sensitive:
-  Upload these files beside index.html:
-  LOGO.png  -> logo.png
-  NANA.jpeg -> nana.jpg
-  MISC.webp -> misc.jpg
--->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#D32F2F" />
+  <meta name="theme-color" content="#2A0A3D" />
+  <meta name="description" content="A polished blood pressure measurement tracker." />
   <title>BP Measurement Tracker</title>
-
   <style>
     :root {
-      --cream: #FDFBF7;
-      --paper: rgba(255, 255, 255, 0.84);
-      --ink: #1f2937;
-      --muted: #64748b;
-      --red: #D32F2F;
-      --red-dark: #a71919;
-      --red-soft: #fff0ef;
-      --green: #177245;
-      --green-soft: #e9f8ef;
-      --yellow: #9a6700;
-      --yellow-soft: #fff7d6;
-      --line: rgba(125, 72, 64, 0.16);
-      --shadow: 0 18px 44px rgba(100, 54, 45, 0.14);
+      --navy: #2a0a3d;
+      --navy-soft: #4a1258;
+      --surface: rgba(255, 248, 236, 0.95);
+      --surface-solid: #fff8ec;
+      --ink: #2b1330;
+      --muted: #83718c;
+      --aqua: #7b2ff7;
+      --aqua-dark: #5b1fc4;
+      --aqua-pale: #f1e6ff;
+      --blue: #ff9f40;
+      --coral: #ff5d73;
+      --gold: #ffc24b;
+      --teal: #00d9b5;
+      --line: rgba(138, 63, 252, 0.15);
+      --red: #ff3b5c;
+      --red-dark: #c31c40;
+      --red-pale: #ffe3e8;
+      --amber: #a15e00;
+      --amber-pale: #ffefd0;
+      --green: #0c9a63;
+      --green-pale: #dffbec;
+      --shadow: 0 20px 50px rgba(120, 20, 70, 0.28);
+      --font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
-    html {
-      background: var(--cream);
-    }
+    html { background: var(--navy); }
 
     body {
       min-height: 100vh;
@@ -44,136 +43,112 @@
       overflow: hidden;
       color: var(--ink);
       background:
-        radial-gradient(circle at top left, rgba(255, 224, 213, 0.82), transparent 36%),
-        radial-gradient(circle at bottom right, rgba(255, 239, 204, 0.65), transparent 34%),
-        var(--cream);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        radial-gradient(circle at 12% 8%, rgba(255, 159, 64, 0.4), transparent 32%),
+        radial-gradient(circle at 90% 12%, rgba(123, 47, 247, 0.4), transparent 34%),
+        radial-gradient(circle at 50% 100%, rgba(0, 217, 181, 0.22), transparent 42%),
+        linear-gradient(155deg, #2a0a3d 0%, #6a1263 38%, #d8286b 70%, #ff8a3d 100%);
+      background-size: 180% 180%;
+      animation: gradientFlow 16s ease-in-out infinite;
+      font-family: var(--font);
     }
 
-    body::before,
-    body::after {
+    button, input, select { font: inherit; }
+    button { touch-action: manipulation; }
+    button:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 4px solid rgba(123, 47, 247, 0.35);
+      outline-offset: 2px;
+    }
+
+    @keyframes gradientFlow {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .rain-layer, .water-ripples, .aurora-orbs, #touchCanvas {
       position: fixed;
-      z-index: -2;
-      width: 42vw;
-      height: 42vw;
-      min-width: 290px;
-      min-height: 290px;
-      content: "";
-      filter: blur(34px);
-      border-radius: 50%;
-      opacity: 0.36;
-      pointer-events: none;
-      animation: floatOrb 18s ease-in-out infinite alternate;
-    }
-
-    body::before {
-      top: -13vw;
-      left: -14vw;
-      background: #f6a99b;
-    }
-
-    body::after {
-      right: -16vw;
-      bottom: -14vw;
-      background: #ffd9a8;
-      animation-delay: -8s;
-      animation-duration: 23s;
-    }
-
-    .ambient-orb {
-      position: fixed;
-      z-index: -1;
-      width: 32vw;
-      height: 32vw;
-      min-width: 220px;
-      min-height: 220px;
-      border-radius: 50%;
-      background: rgba(211, 47, 47, 0.12);
-      filter: blur(28px);
-      pointer-events: none;
-      animation: drift 20s linear infinite;
-    }
-
-    .ambient-orb.one {
-      top: 29%;
-      left: 62%;
-    }
-
-    .ambient-orb.two {
-      top: 70%;
-      left: 8%;
-      background: rgba(255, 193, 122, 0.2);
-      animation-duration: 27s;
-      animation-direction: reverse;
-    }
-
-    @keyframes floatOrb {
-      from { transform: translate3d(0, 0, 0) scale(1); }
-      to { transform: translate3d(11vw, 8vh, 0) scale(1.2); }
-    }
-
-    @keyframes drift {
-      0% { transform: translate3d(0, 0, 0) scale(1); }
-      50% { transform: translate3d(-12vw, -7vh, 0) scale(1.24); }
-      100% { transform: translate3d(0, 0, 0) scale(1); }
-    }
-
-    #trail-layer {
-      position: fixed;
-      z-index: 100;
+      z-index: 0;
       inset: 0;
+      overflow: hidden;
       pointer-events: none;
     }
 
-    .touch-trail {
+    #touchCanvas { z-index: 90; }
+
+    .orb {
       position: absolute;
-      width: 16px;
-      height: 16px;
       border-radius: 50%;
-      transform: translate(-50%, -50%);
-      box-shadow: 0 0 18px currentColor;
-      animation: trailFade 550ms ease-out forwards;
+      opacity: 0.42;
+      animation: orbDrift ease-in-out infinite;
+    }
+    .orb:nth-child(1) { top: -12%; left: -10%; width: 46vw; height: 46vw; max-width: 420px; max-height: 420px; background: radial-gradient(circle, var(--aqua), transparent 70%); animation-duration: 17s; }
+    .orb:nth-child(2) { right: -8%; bottom: -14%; width: 38vw; height: 38vw; max-width: 360px; max-height: 360px; background: radial-gradient(circle, var(--blue), transparent 70%); animation-duration: 21s; animation-delay: -6s; }
+    .orb:nth-child(3) { top: 45%; right: 20%; width: 30vw; height: 30vw; max-width: 280px; max-height: 280px; background: radial-gradient(circle, var(--teal), transparent 70%); animation-duration: 19s; animation-delay: -10s; }
+
+    @keyframes orbDrift {
+      0% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(4%, -6%) scale(1.08); }
+      66% { transform: translate(-3%, 5%) scale(0.95); }
+      100% { transform: translate(0, 0) scale(1); }
     }
 
-    @keyframes trailFade {
-      from {
-        opacity: 0.82;
-        transform: translate(-50%, -50%) scale(1);
-      }
-      to {
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(0.1);
-      }
+    .rain-drop {
+      position: absolute;
+      top: -22vh;
+      width: 1px;
+      height: clamp(32px, 7vh, 78px);
+      border-radius: 99px;
+      opacity: 0.4;
+      background: linear-gradient(180deg, transparent, rgba(255, 194, 75, 0.9));
+      transform: rotate(12deg);
+      animation: rainfall linear infinite;
     }
 
-    .app-shell {
+    @keyframes rainfall {
+      to { transform: translate3d(15vw, 135vh, 0) rotate(12deg); }
+    }
+
+    .water-ripple {
+      position: absolute;
+      width: min(77vw, 640px);
+      aspect-ratio: 1;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 50%;
+      box-shadow: inset 0 0 48px rgba(255, 159, 64, 0.1), 0 0 56px rgba(123, 47, 247, 0.16);
+      animation: ripple 11s ease-out infinite;
+    }
+
+    .water-ripple:nth-child(1) { top: -30%; left: -35%; box-shadow: inset 0 0 48px rgba(123, 47, 247, 0.12), 0 0 60px rgba(123, 47, 247, 0.18); }
+    .water-ripple:nth-child(2) { right: -34%; bottom: -28%; animation-delay: -4s; box-shadow: inset 0 0 48px rgba(255, 159, 64, 0.12), 0 0 60px rgba(255, 159, 64, 0.18); }
+    .water-ripple:nth-child(3) { top: 39%; left: 28%; width: min(34vw, 330px); animation-delay: -7s; animation-duration: 13s; box-shadow: inset 0 0 40px rgba(0, 217, 181, 0.14), 0 0 50px rgba(0, 217, 181, 0.2); }
+
+    @keyframes ripple {
+      0% { opacity: 0; transform: scale(0.55); }
+      20% { opacity: 0.75; }
+      100% { opacity: 0; transform: scale(1.35); }
+    }
+
+    .app {
       position: relative;
-      width: min(100%, 680px);
+      z-index: 1;
+      width: min(100%, 720px);
       height: 100dvh;
       margin: 0 auto;
     }
 
-    .screen-stage {
-      position: relative;
-      height: 100%;
-      overflow: hidden;
-    }
+    .screens { position: relative; height: 100%; overflow: hidden; }
 
     .screen {
       position: absolute;
       inset: 0;
-      display: flex;
       overflow-y: auto;
-      padding: 18px 18px 132px;
+      padding: 20px 16px 122px;
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
-      transform: translateX(38px) scale(0.985);
-      transition:
-        opacity 420ms ease,
-        transform 420ms cubic-bezier(.2, .8, .2, 1),
-        visibility 0s linear 420ms;
+      transform: translate3d(46px, 16px, 0) scale(0.975);
+      transition: opacity 460ms ease, transform 460ms cubic-bezier(.2, .85, .25, 1), visibility 0s linear 460ms;
       scrollbar-width: thin;
+      scrollbar-color: rgba(216, 179, 255, 0.5) transparent;
     }
 
     .screen.active {
@@ -181,496 +156,328 @@
       opacity: 1;
       visibility: visible;
       pointer-events: auto;
-      transform: translateX(0) scale(1);
+      transform: translate3d(0, 0, 0) scale(1);
       transition-delay: 0s;
     }
 
-    .screen-content {
-      width: 100%;
-      max-width: 590px;
-      margin: 0 auto;
-    }
+    .content { width: 100%; max-width: 620px; margin: 0 auto; }
 
-    .screen-header {
+    .brand {
       display: grid;
       justify-items: center;
-      margin-bottom: 12px;
+      margin: 1px 0 14px;
+      text-align: center;
     }
 
     .app-logo {
       display: block;
-      width: 122px;
-      height: 92px;
+      width: 124px;
+      height: 95px;
       object-fit: contain;
-      filter: drop-shadow(0 9px 12px rgba(211, 47, 47, 0.12));
+      filter: drop-shadow(0 8px 14px rgba(90, 10, 60, 0.28));
+      animation: logoBreath 4.5s ease-in-out infinite;
     }
 
-    .eyebrow {
-      margin: -1px 0 7px;
-      color: var(--red);
-      font-size: 0.74rem;
-      font-weight: 850;
-      letter-spacing: 0.13em;
-      text-align: center;
+    @keyframes logoBreath {
+      50% { transform: translateY(-4px) scale(1.025); filter: drop-shadow(0 13px 20px rgba(90, 10, 60, 0.34)); }
     }
 
-    h1,
-    h2,
-    h3,
-    p {
-      margin-top: 0;
+    .brand-kicker {
+      margin: -2px 0 5px;
+      color: var(--gold);
+      font-size: 0.73rem;
+      font-weight: 900;
+      letter-spacing: 0.16em;
     }
 
+    .ekg-strip { width: min(220px, 70%); height: 24px; margin: 2px auto 8px; overflow: hidden; opacity: 0.9; }
+    .ekg-track { display: block; width: 1200px; height: 24px; animation: ekgScroll 4.2s linear infinite; }
+    .ekg-track path { fill: none; stroke: var(--gold); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; animation: ekgGlow 2.1s ease-in-out infinite; }
+
+    @keyframes ekgScroll { to { transform: translateX(-600px); } }
+    @keyframes ekgGlow {
+      0%, 100% { filter: drop-shadow(0 0 4px rgba(255, 159, 64, 0.55)); }
+      50% { filter: drop-shadow(0 0 10px rgba(255, 159, 64, 0.9)); }
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
     h1 {
       margin-bottom: 8px;
-      font-size: clamp(1.65rem, 6vw, 2.25rem);
-      line-height: 1.12;
-      letter-spacing: -0.045em;
-      text-align: center;
+      color: var(--surface-solid);
+      font-size: clamp(1.72rem, 7vw, 2.5rem);
+      line-height: 1.08;
+      letter-spacing: -0.052em;
     }
+    h2 { margin-bottom: 8px; font-size: clamp(1.36rem, 5vw, 1.82rem); line-height: 1.18; letter-spacing: -0.035em; }
+    h3 { margin-bottom: 4px; font-size: 1rem; }
 
-    h2 {
-      margin-bottom: 7px;
-      font-size: clamp(1.4rem, 5vw, 1.85rem);
-      letter-spacing: -0.03em;
-    }
-
-    h3 {
-      font-size: 1.05rem;
-    }
-
-    .intro,
-    .helper-text {
-      color: var(--muted);
+    .lead {
+      max-width: 490px;
+      margin: 0 auto;
+      color: #ffe7ce;
       font-size: 1rem;
+      font-weight: 560;
       line-height: 1.52;
     }
 
-    .intro {
-      max-width: 440px;
-      margin: 0 auto 22px;
-      text-align: center;
-    }
-
-    .card {
-      padding: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.78);
-      border-radius: 25px;
-      background: var(--paper);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(16px);
-    }
-
-    .card + .card,
-    .card + .section-gap {
-      margin-top: 15px;
-    }
-
-    button,
-    input,
-    select {
-      font: inherit;
-    }
-
-    button {
-      min-height: 52px;
-      border: 0;
-      border-radius: 16px;
-      cursor: pointer;
-      touch-action: manipulation;
-      transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
-    }
-
-    button:active {
-      transform: scale(0.98);
-    }
-
-    button:focus-visible,
-    input:focus-visible,
-    select:focus-visible {
-      outline: 4px solid rgba(211, 47, 47, 0.22);
-      outline-offset: 2px;
-    }
-
-    .profile-options {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .profile-choice {
-      min-height: 96px;
-      padding: 16px 10px;
-      border: 2px solid rgba(211, 47, 47, 0.12);
-      color: #4a2424;
-      background: rgba(255, 255, 255, 0.8);
-      font-size: 1.02rem;
-      font-weight: 800;
-      line-height: 1.2;
-    }
-
-    .profile-choice:hover,
-    .profile-choice.selected {
-      border-color: var(--red);
-      color: #fff;
-      background: linear-gradient(135deg, var(--red), #e94444);
-      box-shadow: 0 10px 24px rgba(211, 47, 47, 0.25);
-    }
-
-    .profile-preview {
-      display: grid;
-      grid-template-columns: 85px 1fr;
-      gap: 15px;
+    .stepper {
+      display: flex;
       align-items: center;
-      margin: 17px 0 20px;
+      justify-content: center;
+      gap: 7px;
+      margin: 15px 0 17px;
+    }
+    .stepper span { width: 28px; height: 5px; border-radius: 999px; background: rgba(255, 232, 199, 0.28); transition: width 300ms ease, background 300ms ease; }
+    .stepper span.active { width: 48px; background: var(--gold); box-shadow: 0 0 16px rgba(255, 194, 75, 0.68); animation: stepPulse 1.8s ease-in-out infinite; }
+
+    @keyframes stepPulse {
+      0%, 100% { box-shadow: 0 0 16px rgba(255, 194, 75, 0.55); }
+      50% { box-shadow: 0 0 24px rgba(255, 194, 75, 0.95); }
+    }
+
+    .panel {
+      padding: 21px;
+      border: 1px solid rgba(255, 248, 236, 0.6);
+      border-radius: 28px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(20px);
+    }
+
+    .screen.active .panel { animation: panelRise 520ms 60ms cubic-bezier(.2, .9, .25, 1) both; }
+
+    @keyframes panelRise {
+      from { opacity: 0; transform: translateY(18px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .subtitle { margin-bottom: 17px; color: var(--muted); font-size: 0.98rem; line-height: 1.48; }
+
+    .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .profile-choice {
+      position: relative;
+      min-height: 134px;
+      overflow: hidden;
       padding: 12px;
+      border: 2px solid rgba(123, 47, 247, 0.18);
+      border-radius: 20px;
+      color: var(--ink);
+      background: var(--surface-solid);
+      cursor: pointer;
+      text-align: left;
+      transition: transform 190ms ease, border-color 190ms ease, box-shadow 190ms ease, background 190ms ease;
+    }
+    .profile-choice:hover { transform: translateY(-4px) scale(1.015); box-shadow: 0 14px 28px rgba(123, 47, 247, 0.22); }
+    .profile-choice.selected { border-color: var(--aqua); background: linear-gradient(150deg, var(--aqua-pale), #ffe9d6); box-shadow: 0 13px 26px rgba(123, 47, 247, 0.24); }
+    .profile-choice.selected::after { position: absolute; top: 10px; right: 10px; display: grid; width: 24px; height: 24px; place-items: center; border-radius: 50%; color: #fff; background: var(--aqua); content: "✓"; font-weight: 900; }
+    .choice-image { display: block; width: 55px; height: 55px; margin-bottom: 9px; border: 2px solid var(--surface-solid); border-radius: 16px; object-fit: cover; box-shadow: 0 5px 13px rgba(90, 20, 60, 0.18); }
+    .choice-title { display: block; font-size: 0.96rem; font-weight: 900; line-height: 1.15; }
+    .choice-copy { display: block; margin-top: 4px; color: var(--muted); font-size: 0.74rem; font-weight: 700; }
+
+    .patient-summary {
+      display: grid;
+      grid-template-columns: 68px 1fr;
+      gap: 13px;
+      align-items: center;
+      margin: 18px 0;
+      padding: 11px;
       border: 1px solid var(--line);
       border-radius: 18px;
-      background: rgba(255, 250, 247, 0.82);
+      background: linear-gradient(135deg, var(--aqua-pale), var(--surface-solid));
+      animation: reveal 360ms ease both;
     }
+    @keyframes reveal { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .patient-summary img { width: 68px; height: 68px; border: 3px solid var(--surface-solid); border-radius: 16px; object-fit: cover; box-shadow: 0 6px 15px rgba(90, 20, 60, 0.2); }
+    .patient-summary strong { display: block; font-size: 1rem; }
+    .patient-summary span { display: block; margin-top: 3px; color: var(--muted); font-size: 0.84rem; font-weight: 650; }
 
-    .profile-image {
-      width: 85px;
-      height: 85px;
-      border: 3px solid #fff;
-      border-radius: 18px;
-      object-fit: cover;
-      box-shadow: 0 7px 18px rgba(68, 37, 34, 0.16);
-    }
-
-    .profile-preview p {
-      margin: 4px 0 0;
-      color: var(--muted);
-      font-size: 0.91rem;
-      line-height: 1.35;
-    }
-
-    .fields-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
-
-    .field {
-      display: grid;
-      gap: 7px;
-      color: #344054;
-      font-size: 0.93rem;
-      font-weight: 800;
-    }
-
-    .field.full {
-      grid-column: 1 / -1;
-    }
-
-    .field input,
-    .field select {
+    .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
+    .field { display: grid; gap: 7px; color: #4a2d55; font-size: 0.84rem; font-weight: 850; }
+    .field.full { grid-column: 1 / -1; }
+    .input-wrap { position: relative; }
+    .field input, .field select {
       width: 100%;
-      min-height: 54px;
+      min-height: 55px;
       padding: 0 14px;
-      border: 1.5px solid #e8d9d5;
+      border: 1.5px solid #e4d2ff;
       border-radius: 14px;
       color: var(--ink);
-      background: rgba(255, 255, 255, 0.95);
-      font-size: 1.05rem;
-      font-weight: 650;
-      transition: border-color 160ms ease, box-shadow 160ms ease;
+      background: var(--surface-solid);
+      font-size: 1rem;
+      font-weight: 720;
+      transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
     }
-
-    .field input:focus,
-    .field select:focus {
-      border-color: var(--red);
-      box-shadow: 0 0 0 4px rgba(211, 47, 47, 0.1);
-      outline: none;
-    }
-
-    .field input.is-invalid,
-    .field select.is-invalid,
-    .reading-input.is-invalid {
-      border-color: var(--red) !important;
-      box-shadow: 0 0 0 4px rgba(211, 47, 47, 0.12);
-    }
-
-    .primary-button {
-      width: 100%;
-      min-height: 59px;
-      margin-top: 20px;
-      color: #fff;
-      background: linear-gradient(135deg, #b92424, #e53d3d);
-      box-shadow: 0 13px 25px rgba(211, 47, 47, 0.28);
-      font-size: 1.08rem;
-      font-weight: 850;
-    }
-
-    .primary-button:hover {
-      box-shadow: 0 16px 30px rgba(211, 47, 47, 0.36);
-      transform: translateY(-2px);
-    }
-
-    .primary-button.massive {
-      min-height: 70px;
-      font-size: 1.1rem;
-    }
-
-    .primary-button:disabled {
-      cursor: not-allowed;
-      opacity: 0.66;
-      transform: none;
-      box-shadow: none;
-    }
-
-    .secondary-button,
-    .text-button {
-      color: var(--red-dark);
-      background: rgba(255, 255, 255, 0.72);
-      font-weight: 800;
-    }
-
-    .secondary-button {
-      width: 100%;
-      margin-top: 12px;
-      border: 1px solid rgba(211, 47, 47, 0.2);
-    }
-
-    .text-button {
-      min-height: auto;
-      padding: 8px 3px;
-      color: #7b3838;
-      background: transparent;
-      font-size: 0.94rem;
-    }
-
-    .back-row {
-      margin-bottom: 8px;
-    }
-
-    .reading-list {
-      display: grid;
-      gap: 13px;
-      margin-top: 18px;
-    }
-
-    .reading-card {
-      display: grid;
-      grid-template-columns: 44px 1fr 1fr;
-      gap: 10px;
-      align-items: end;
-      padding: 14px;
-      border: 1px solid rgba(211, 47, 47, 0.12);
-      border-radius: 19px;
-      background: rgba(255, 255, 255, 0.83);
-    }
-
-    .reading-number {
+    .field input:focus, .field select:focus { border-color: var(--aqua); box-shadow: 0 0 0 4px rgba(123, 47, 247, 0.16); outline: none; }
+    .field input.is-invalid, .field select.is-invalid, .bp-input.is-invalid { border-color: var(--red) !important; box-shadow: 0 0 0 4px rgba(255, 59, 92, 0.14) !important; animation: shake 420ms ease-in-out; }
+    .calendar-button {
+      position: absolute;
+      top: 50%;
+      right: 8px;
       display: grid;
       width: 39px;
       height: 39px;
       place-items: center;
-      border-radius: 50%;
-      color: var(--red-dark);
-      background: var(--red-soft);
-      font-size: 0.88rem;
-      font-weight: 900;
+      overflow: hidden;
+      border: 0;
+      border-radius: 11px;
+      color: var(--aqua-dark);
+      background: var(--aqua-pale);
+      cursor: pointer;
+      transform: translateY(-50%);
+    }
+    .calendar-button svg { width: 19px; height: 19px; }
+    #measureDate { padding-right: 57px; }
+    .date-hint { margin: 9px 0 0; color: var(--muted); font-size: 0.8rem; font-weight: 650; }
+
+    @keyframes shake {
+      10%, 90% { transform: translateX(-1px); }
+      20%, 80% { transform: translateX(2px); }
+      30%, 50%, 70% { transform: translateX(-4px); }
+      40%, 60% { transform: translateX(4px); }
     }
 
-    .reading-field {
-      display: grid;
-      gap: 6px;
-      color: #52606d;
-      font-size: 0.76rem;
-      font-weight: 850;
-    }
-
-    .reading-input {
+    .primary, .secondary, .danger-button {
+      position: relative;
+      overflow: hidden;
       width: 100%;
-      min-width: 0;
-      min-height: 55px;
-      padding: 0 10px;
-      border: 1.5px solid #ecdeda;
-      border-radius: 13px;
-      color: var(--ink);
-      background: #fff;
-      font-size: 1.17rem;
-      font-weight: 800;
-      text-align: center;
-    }
-
-    .reading-input:focus {
-      border-color: var(--red);
-      outline: none;
-      box-shadow: 0 0 0 4px rgba(211, 47, 47, 0.1);
-    }
-
-    .reading-input::placeholder {
-      color: #a7afb8;
-      font-size: 0.82rem;
-      font-weight: 650;
-    }
-
-    .results-averages {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 15px;
-    }
-
-    .average-card {
-      padding: 17px 10px;
-      border: 1px solid rgba(211, 47, 47, 0.12);
-      border-radius: 20px;
-      background: linear-gradient(145deg, #fff, #fff4f0);
-      text-align: center;
-    }
-
-    .average-card span {
-      display: block;
-      color: var(--muted);
-      font-size: 0.79rem;
-      font-weight: 850;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-
-    .average-card strong {
-      display: block;
-      margin-top: 5px;
-      color: var(--red-dark);
-      font-size: clamp(2.4rem, 11vw, 4rem);
-      line-height: 0.95;
-      letter-spacing: -0.07em;
-    }
-
-    .average-card small {
-      color: var(--muted);
-      font-size: 0.78rem;
-      font-weight: 750;
-    }
-
-    .status-card {
-      padding: 20px;
-      border: 1px solid transparent;
-      border-radius: 21px;
-    }
-
-    .status-card.normal {
-      border-color: #bde7cc;
-      background: var(--green-soft);
-      color: #115c38;
-    }
-
-    .status-card.low {
-      border-color: #d4c48b;
-      background: var(--yellow-soft);
-      color: #765300;
-    }
-
-    .status-card.high {
-      border-color: #ecd47d;
-      background: #fff5cb;
-      color: #825a00;
-    }
-
-    .status-card.danger,
-    .status-card.critical {
-      border-color: #f5aaaa;
-      color: #fff;
-      background: linear-gradient(135deg, #b71919, #e53935);
-      box-shadow: 0 12px 25px rgba(211, 47, 47, 0.27);
-      animation: dangerPulse 1.1s ease-in-out infinite;
-    }
-
-    .status-card.critical {
-      background: linear-gradient(135deg, #7f1010, #d32f2f);
-    }
-
-    .status-label {
-      display: inline-block;
-      margin-bottom: 9px;
-      font-size: 0.76rem;
-      font-weight: 900;
-      letter-spacing: 0.13em;
-    }
-
-    .status-card h2 {
-      margin-bottom: 9px;
-      font-size: clamp(1.45rem, 6vw, 2rem);
-    }
-
-    .status-card p {
-      margin-bottom: 0;
+      min-height: 58px;
+      border: 0;
+      border-radius: 16px;
+      cursor: pointer;
       font-size: 1rem;
-      font-weight: 700;
-      line-height: 1.5;
+      font-weight: 880;
+      transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
+    }
+    .primary { margin-top: 20px; color: #fff; background: linear-gradient(135deg, var(--coral), var(--blue)); box-shadow: 0 13px 25px rgba(255, 93, 115, 0.35); }
+    .primary::before { content: ""; position: absolute; top: 0; left: 0; width: 40%; height: 100%; background: linear-gradient(115deg, transparent, rgba(255, 255, 255, 0.55), transparent); transform: translateX(-150%) skewX(-12deg); animation: buttonShimmer 3.4s ease-in-out infinite; }
+    .primary:hover { filter: brightness(1.06); transform: translateY(-2px); box-shadow: 0 17px 31px rgba(255, 93, 115, 0.42); }
+    .primary.large { min-height: 70px; font-size: 1.06rem; animation: buttonGlowPulse 2.6s ease-in-out infinite; }
+    .secondary { position: relative; overflow: hidden; margin-top: 12px; border: 1px solid rgba(123, 47, 247, 0.22); color: var(--aqua-dark); background: var(--surface-solid); }
+    .danger-button { position: relative; overflow: hidden; margin-top: 12px; color: var(--red-dark); background: var(--surface-solid); }
+    .primary:active, .secondary:active, .danger-button:active, .calendar-button:active { transform: scale(0.98); }
+    .primary:disabled { cursor: wait; opacity: 0.65; transform: none; box-shadow: none; animation: none; }
+    .primary:disabled::before { animation: none; }
+    .back-button { min-height: 30px; margin-bottom: 7px; padding: 4px 0; border: 0; color: var(--gold); background: transparent; cursor: pointer; font-size: 0.9rem; font-weight: 800; }
+
+    @keyframes buttonShimmer {
+      0% { transform: translateX(-150%) skewX(-12deg); }
+      100% { transform: translateX(220%) skewX(-12deg); }
+    }
+    @keyframes buttonGlowPulse {
+      0%, 100% { box-shadow: 0 13px 25px rgba(123, 47, 247, 0.28); }
+      50% { box-shadow: 0 17px 36px rgba(123, 47, 247, 0.5); }
     }
 
-    @keyframes dangerPulse {
-      0%, 100% { box-shadow: 0 10px 20px rgba(211, 47, 47, 0.2); }
-      50% { box-shadow: 0 15px 35px rgba(211, 47, 47, 0.55); }
+    .click-ripple { position: absolute; border-radius: 50%; background: rgba(255, 255, 255, 0.55); transform: scale(0); pointer-events: none; animation: clickRipple 550ms ease-out forwards; }
+    @keyframes clickRipple { from { transform: scale(0); opacity: 0.5; } to { transform: scale(1); opacity: 0; } }
+
+    .readings-heading { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+    .mini-badge { flex: 0 0 auto; padding: 7px 10px; border-radius: 99px; color: var(--aqua-dark); background: var(--aqua-pale); font-size: 0.75rem; font-weight: 900; }
+    .reading-list { display: grid; gap: 12px; margin-top: 17px; }
+    .reading {
+      display: grid;
+      grid-template-columns: 42px 1fr 1fr;
+      gap: 10px;
+      align-items: end;
+      padding: 13px;
+      border: 1px solid #ffe1c4;
+      border-radius: 19px;
+      background: linear-gradient(135deg, var(--surface-solid), #fff1dc);
+      transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+    }
+    .reading:focus-within { border-color: rgba(123, 47, 247, 0.5); box-shadow: 0 10px 22px rgba(123, 47, 247, 0.14); transform: translateY(-2px); }
+    .reading-index { display: grid; width: 39px; height: 39px; place-items: center; border-radius: 50%; color: var(--aqua-dark); background: var(--aqua-pale); font-size: 0.84rem; font-weight: 950; }
+    .bp-field { display: grid; gap: 6px; color: #6b4e63; font-size: 0.72rem; font-weight: 900; letter-spacing: 0.055em; }
+    .bp-input { width: 100%; min-width: 0; min-height: 56px; padding: 0 9px; border: 1.5px solid #e4d2ff; border-radius: 13px; color: var(--ink); background: var(--surface-solid); font-size: 1.22rem; font-weight: 850; text-align: center; }
+    .bp-input:focus { border-color: var(--aqua); outline: none; box-shadow: 0 0 0 4px rgba(123, 47, 247, 0.15); }
+    .bp-input::placeholder { color: #b79fc9; font-size: 0.79rem; font-weight: 650; }
+    .tip { margin: 14px 1px 0; color: var(--muted); font-size: 0.83rem; line-height: 1.45; }
+
+    .averages { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+    .average { padding: 17px 10px; border: 1px solid #ffe1c4; border-radius: 20px; background: linear-gradient(140deg, var(--surface-solid), #fff1dc); text-align: center; }
+    .average span { display: block; color: var(--muted); font-size: 0.74rem; font-weight: 900; letter-spacing: 0.08em; }
+    .average strong { display: block; margin: 5px 0 2px; color: var(--aqua-dark); font-size: clamp(2.7rem, 13vw, 4.4rem); line-height: 0.9; letter-spacing: -0.08em; }
+    .average strong.pop { animation: numberPop 420ms cubic-bezier(.34, 1.4, .4, 1) both; }
+    .average small { color: var(--muted); font-size: 0.76rem; font-weight: 750; }
+
+    @keyframes numberPop {
+      0% { transform: scale(0.7); opacity: 0; }
+      60% { transform: scale(1.08); opacity: 1; }
+      100% { transform: scale(1); }
     }
 
-    .alarm-stop {
-      width: 100%;
-      margin-top: 13px;
-      color: #8c1717;
-      background: #fff;
-      font-weight: 900;
+    .status-card { padding: 20px; border: 1px solid transparent; border-radius: 21px; }
+    .status-card .label { display: flex; align-items: center; margin-bottom: 9px; font-size: 0.73rem; font-weight: 950; letter-spacing: 0.14em; }
+    .status-dot { display: inline-block; width: 8px; height: 8px; margin-right: 6px; border-radius: 50%; background: currentColor; animation: statusDotPulse 1.6s ease-in-out infinite; }
+    @keyframes statusDotPulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.6); opacity: 0.5; }
     }
+    .status-card h2 { margin-bottom: 9px; font-size: clamp(1.45rem, 6.2vw, 2rem); }
+    .status-card p { margin-bottom: 0; font-size: 0.98rem; font-weight: 680; line-height: 1.5; }
+    .status-card.normal { color: var(--green); border-color: #b9efd2; background: var(--green-pale); }
+    .status-card.low { color: var(--amber); border-color: #f3d79a; background: var(--amber-pale); }
+    .status-card.high { color: #8a4a00; border-color: #f5c97d; background: #ffe3b8; }
+    .status-card.danger, .status-card.critical { color: #fff; border-color: #ffc2cc; background: linear-gradient(135deg, var(--red-dark), var(--red)); box-shadow: 0 13px 28px rgba(195, 28, 64, 0.32); animation: dangerGlow 1.15s ease-in-out infinite; }
+    .status-card.critical { background: linear-gradient(135deg, #6b0f22, #c31c40); }
+    @keyframes dangerGlow { 50% { box-shadow: 0 15px 34px rgba(255, 59, 92, 0.65); transform: scale(1.012); } }
+    .disclaimer { margin: 14px 3px 0; color: var(--muted); font-size: 0.78rem; line-height: 1.45; text-align: center; }
 
-    .medical-note {
-      margin: 15px 0 0;
-      color: var(--muted);
-      font-size: 0.82rem;
-      line-height: 1.45;
-      text-align: center;
-    }
-
-    .app-footer {
+    .footer {
       position: fixed;
       z-index: 20;
       right: 50%;
-      bottom: max(13px, env(safe-area-inset-bottom));
+      bottom: max(12px, env(safe-area-inset-bottom));
       display: flex;
-      width: min(calc(100% - 28px), 520px);
-      min-height: 54px;
+      width: min(calc(100% - 28px), 525px);
+      min-height: 56px;
       align-items: center;
       justify-content: space-between;
       gap: 10px;
-      padding: 8px 10px 8px 17px;
-      border: 1px solid rgba(255, 255, 255, 0.84);
+      padding: 8px 10px 8px 16px;
+      border: 1px solid rgba(255, 194, 75, 0.35);
       border-radius: 18px;
-      background: rgba(255, 255, 255, 0.86);
-      box-shadow: 0 10px 28px rgba(89, 48, 40, 0.16);
-      backdrop-filter: blur(16px);
+      color: var(--surface-solid);
+      background: rgba(42, 10, 61, 0.82);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.26);
+      backdrop-filter: blur(18px);
       transform: translateX(50%);
     }
-
-    .app-footer span {
-      color: #5d4a47;
-      font-size: 0.9rem;
-      font-weight: 800;
-    }
-
-    .contact-button {
-      min-height: 37px;
-      padding: 0 14px;
-      color: #fff;
-      background: var(--red);
-      font-size: 0.83rem;
+    .footer-brand { font-size: 0.9rem; font-weight: 750; }
+    .footer-actions { display: flex; align-items: center; gap: 8px; }
+    .pill-button {
+      position: relative;
+      overflow: hidden;
+      min-height: 38px;
+      padding: 0 13px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 0.78rem;
       font-weight: 850;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      transition: transform 180ms ease, filter 180ms ease;
     }
+    .pill-button:active { transform: scale(0.97); }
+    .contact { border: 1px solid rgba(216, 179, 255, 0.4); color: var(--surface-solid); background: rgba(123, 47, 247, 0.32); }
+    .logs-link { border: 1px solid rgba(255, 194, 75, 0.4); color: var(--surface-solid); background: rgba(255, 159, 64, 0.3); }
 
     .toast {
       position: fixed;
-      z-index: 200;
-      top: 20px;
+      z-index: 120;
+      top: 16px;
       left: 50%;
-      width: min(calc(100% - 36px), 430px);
-      padding: 14px 17px;
-      border-radius: 15px;
-      color: #fff;
-      background: #263238;
-      box-shadow: 0 12px 28px rgba(38, 50, 56, 0.22);
-      font-size: 0.95rem;
+      width: min(calc(100% - 32px), 430px);
+      padding: 13px 16px;
+      border: 1px solid rgba(255, 194, 75, 0.3);
+      border-radius: 14px;
+      color: var(--surface-solid);
+      background: rgba(42, 10, 61, 0.94);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
+      font-size: 0.92rem;
       font-weight: 750;
       text-align: center;
       opacity: 0;
@@ -678,798 +485,495 @@
       transform: translate(-50%, -18px);
       transition: opacity 240ms ease, transform 240ms ease;
     }
-
-    .toast.show {
-      opacity: 1;
-      transform: translate(-50%, 0);
-    }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
     .success-overlay {
       position: fixed;
-      z-index: 300;
+      z-index: 130;
       inset: 0;
       display: grid;
       place-items: center;
       padding: 24px;
-      background: rgba(54, 32, 29, 0.36);
-      backdrop-filter: blur(8px);
+      background: rgba(30, 6, 42, 0.6);
+      backdrop-filter: blur(9px);
       opacity: 0;
       pointer-events: none;
-      transition: opacity 260ms ease;
+      transition: opacity 270ms ease;
     }
+    .success-overlay.show { opacity: 1; pointer-events: auto; }
+    .success-dialog { position: relative; width: min(100%, 390px); overflow: hidden; padding: 30px 23px 23px; border-radius: 28px; background: var(--surface-solid); box-shadow: 0 28px 70px rgba(0, 0, 0, 0.34); text-align: center; transform: translateY(28px) scale(0.94); transition: transform 370ms cubic-bezier(.2, .9, .25, 1); }
+    .success-overlay.show .success-dialog { transform: translateY(0) scale(1); }
+    .success-ring { display: grid; width: 82px; height: 82px; place-items: center; margin: 0 auto 16px; border-radius: 50%; background: var(--green-pale); }
+    .check { width: 25px; height: 45px; border-right: 7px solid var(--green); border-bottom: 7px solid var(--green); transform: rotate(45deg) translate(-5px, -3px) scale(0); }
+    .success-overlay.show .check { animation: drawCheck 520ms 180ms cubic-bezier(.15, .9, .25, 1) forwards; }
+    @keyframes drawCheck { to { transform: rotate(45deg) translate(-5px, -3px) scale(1); } }
+    .success-dialog h2 { margin-bottom: 8px; color: var(--green); }
+    .success-dialog p { margin-bottom: 18px; color: var(--muted); line-height: 1.45; }
+    .confetti { position: absolute; top: -18px; width: 10px; height: 18px; border-radius: 3px; animation: confetti 1.9s ease-in forwards; }
+    @keyframes confetti { to { opacity: 0; transform: translateY(350px) rotate(640deg); } }
 
-    .success-overlay.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .success-modal {
-      position: relative;
-      width: min(100%, 390px);
-      overflow: hidden;
-      padding: 30px 24px 24px;
-      border-radius: 28px;
-      background: #fffdf9;
-      box-shadow: 0 25px 65px rgba(66, 35, 29, 0.3);
-      text-align: center;
-      transform: translateY(22px) scale(0.94);
-      transition: transform 340ms cubic-bezier(.2, .9, .2, 1);
-    }
-
-    .success-overlay.show .success-modal {
-      transform: translateY(0) scale(1);
-    }
-
-    .check-circle {
-      display: grid;
-      width: 82px;
-      height: 82px;
-      place-items: center;
-      margin: 0 auto 16px;
-      border-radius: 50%;
-      background: #e6f8ed;
-    }
-
-    .checkmark {
-      width: 27px;
-      height: 48px;
-      border-right: 7px solid #1a8b50;
-      border-bottom: 7px solid #1a8b50;
-      transform: rotate(45deg) translate(-4px, -3px) scale(0);
-      transform-origin: center;
-    }
-
-    .success-overlay.show .checkmark {
-      animation: drawCheck 530ms 180ms cubic-bezier(.2, .9, .2, 1) forwards;
-    }
-
-    @keyframes drawCheck {
-      to { transform: rotate(45deg) translate(-4px, -3px) scale(1); }
-    }
-
-    .success-modal h2 {
-      margin-bottom: 8px;
-      color: #176c42;
-    }
-
-    .success-modal p {
-      margin-bottom: 19px;
-      color: var(--muted);
-      line-height: 1.45;
-    }
-
-    .confetti {
-      position: absolute;
-      top: -14px;
-      width: 10px;
-      height: 18px;
-      border-radius: 4px;
-      animation: confettiFall 1.8s ease-in forwards;
-    }
-
-    @keyframes confettiFall {
-      from { transform: translateY(0) rotate(0deg); opacity: 1; }
-      to { transform: translateY(340px) rotate(620deg); opacity: 0; }
-    }
-
-    [hidden] {
-      display: none !important;
-    }
+    [hidden] { display: none !important; }
 
     @media (max-width: 390px) {
-      .screen {
-        padding-inline: 13px;
-      }
-
-      .card {
-        padding: 17px;
-        border-radius: 21px;
-      }
-
-      .reading-card {
-        grid-template-columns: 36px 1fr 1fr;
-        gap: 7px;
-        padding: 11px;
-      }
-
-      .reading-number {
-        width: 34px;
-        height: 34px;
-      }
+      .screen { padding-inline: 12px; }
+      .panel { padding: 17px; border-radius: 23px; }
+      .reading { grid-template-columns: 35px 1fr 1fr; gap: 7px; padding: 10px; }
+      .reading-index { width: 34px; height: 34px; }
+      .profile-choice { min-height: 126px; }
+      .footer-brand { display: none; }
+      .footer { justify-content: center; }
+      .pill-button { font-size: 0.72rem; padding: 0 10px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      *,
-      *::before,
-      *::after {
-        scroll-behavior: auto !important;
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
+      *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
     }
   </style>
 </head>
-
 <body>
-  <div class="ambient-orb one"></div>
-  <div class="ambient-orb two"></div>
-  <div id="trail-layer" aria-hidden="true"></div>
+  <div class="rain-layer" id="rainLayer" aria-hidden="true"></div>
+  <div class="water-ripples" aria-hidden="true"><span class="water-ripple"></span><span class="water-ripple"></span><span class="water-ripple"></span></div>
+  <div class="aurora-orbs" aria-hidden="true"><span class="orb"></span><span class="orb"></span><span class="orb"></span></div>
+  <canvas id="touchCanvas" aria-hidden="true"></canvas>
 
   <audio id="clickSound" preload="auto" src="data:audio/wav;base64,UklGRvQCAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YdACAACAqcjW0LiTaUYwLT1chKrG0sqyjmdGMzJDYoerxM7FrIplRzc3SWeKq8LJv6eGY0g6PE5rjazAxbqigmJJPUFTb4+svcG1nX9hS0FFWHORq7u9sZl8YExESlx3k6u5uayVemBOR05gepWqtrWokndfT0pSZH2WqbSypI52X1FOVmh/l6mxrqCLdF9TUVlrgZeor6udiXNgVVRdboSYpqynmoZxYFZWYHGFmKWqpJeEcGFYWWN0h5ikp6GUgnBhWlxmdoiYo6WfkYBvYlxeaXiJmKGjnI9+bmNeYWt6ipigoJmNfW5kYGNufIuYn56Xi3xuZGFmcH6Ml52clYl7bmVjaHJ/jJecmpOHem5mZWp0gI2WmpiRhXluZ2dsdoKNlpmXj4R4bmhobneDjZWYlY2Dd25pam95hI6UlpOMgXdva2txeoSOlJWSioB3b2xtc3uFjpOUkIl/dnBtbnR8ho2Sk4+Hf3ZwbnB1fYaNkZGNhn52cG9xd36HjZGQjIV9dnFwcnh/h42Qj4uEfXZycXN5gIeNj46Kg3x2cnJ0eoGHjI6NiYJ8dnNydXuBh4yNjIiCe3Zzc3Z8goiLjYuHgXt2dHR3fIKIi4yKhoB7dnR1eH2DiIuLiYWAe3d1dnl+g4iKi4iEf3p3dnd6foOHioqIhH96d3Z3en+Eh4mJh4N/enh3eHt/hIeJiYaDfnp4d3l8gISHiYiGgn56eHh5fICEh4iHhYF+enh4en2BhIeIh4SBfXp5eXp9gYSGh4aEgX17eXl7foGEhoeGg4B9e3l6e36BhIaGhYOAfXt6enx/goSGhoWDgH17ent8f4KEhoaEgn99e3p7fX+ChIWFhIJ/fXt7e32AgoSFhYSBf317e3x+gIKEhYWDgX99fHt8foCChIWEg4F/fXx8fH6AgoSEhIOBf318fH1+gIKEhISCgH99fHx9f4GChISDgoB+fXw="></audio>
   <audio id="alarmSound" loop preload="auto" src="data:audio/wav;base64,UklGRuQDAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YcADAACAvOf247V3PBQLI1aVzvDz1J1dKAwSOXSz4/bmt3g7EwwnXp/W9O7GiUkaCh9Sk87y8c2RTx0KHU+RzfHxzI9MGwogVZjU9O7Dg0EUDCplqd/25bFtLw0SPX/B7fPSlE8bCiNcotz25bFrLQwVRInL8u/FgT0RDjR3vez00I9IFgwtbbXo9dWVTRgLK2u06PXUk0oWDC9yuuzzzYhAEQ85gMfx7r92MQwWTJbY9uOnXB8KJmiz6vTNhj0PEkOO0/Xlql0fCiltue3xxHoxDBlTouH21pBDERBCj9X24aBRFw03gs305qlZGwsyfMnz6KxcHAsyfcr056lYGQw2hND14p9OFA9Bktr22I8/DhZSpeb0yHgsCiNrvvHrr1saDTqM1/bYjTsNGl2y7e+4Yx0MN4nW9teKNwweZbrx6qtUFRBHnuT0xXAkCjKE1PbWhzMLI3DF9OKZQQ0aYLnx6aVMERVXsO7srFITE1Ks7e6uVBMTUq3t7axREhVXsu/qpEkPGWG88+OYPQwhccr22YUvCi+G2fXIbh8NQ5/o8LBSERdfvPPhkDUKK4LY9cdqHA5Lqu7qoEIMI3fR9s1xHw1Iqe7pnj8LJn7X9cRlGBJWuPPgiy4KN5bm76tJDSF31PbFZBcTXL/12H0kDEeq7+WTMwo2mOjto0ALK4ng8rBLDSN+2vS4Uw8fd9b1vVcQHXTU9b5YEB111fW8VQ8fedn0tk8NJILf8q1FCyyP5u2fOAo4n+7ljSoMSbP02HYcEmDI9sVdER983PKrQQo0m+3liicNUr32zWUTHHjb8qo/Cjij8N9+HhFizPa7TgwslOvmiSUPWsb2wFIMK5Pr5YcjEF/L9bhKCzOg8N13GRdy2vKkNgtIuPbJWg4okuzjgR0UbdjypDULTb72wVALMqHx2G0TH4bn6IcgE23Z8Z4vDFfJ9bI/Cka59sFOCzir9M1cDS6f8dZnECeV79xvEyKO7OB1FR+K6uJ3Fh6I6uJ3Fh+K6+B0FCGO7d1uEiWW8NdmDyyg889aDDas9cRNCkK79rY9C1PL9KMtD2ja7Y0eGIDo4nMSJ5vyz1cLPbf2tTsLWtLxlSIWfejhcBAro/TFSgpNyPSfKBJ35eNyESyl9cJFClTQ8ZMfGYjt114LPrz2qS4Qc+Xibw8xr/a1Nw1p3+d3ES2q9rg5DWjg5nUQMK72sjMPceXgaQ06u/WjJxaE7tNUCk/P8IkXJaH1uzkObuXgZgxBxPOVHR+Z9L88DW3l32MLRcnxjBgmpfayLxI="></audio>
 
-  <main class="app-shell">
-    <div class="screen-stage">
-      <section class="screen active" id="setupScreen" aria-labelledby="setupHeading">
-        <div class="screen-content">
-          <header class="screen-header">
-            <img src="logo.png" alt="App Logo" class="app-logo" />
-            <p class="eyebrow">BP CARE • DAILY LOG</p>
-            <h1 id="setupHeading">BP Measurement Tracker</h1>
-            <p class="intro">A simple, clear way to record three blood-pressure readings and track the average.</p>
+  <main class="app">
+    <div class="screens">
+      <section class="screen active" id="setupScreen" aria-labelledby="setupTitle">
+        <div class="content">
+          <header class="brand">
+            <img src="assets/LOGO.png" alt="App Logo" class="app-logo" />
+            <p class="brand-kicker">CALM • CLEAR • CONSISTENT</p>
+            <div class="ekg-strip" aria-hidden="true">
+              <svg class="ekg-track" viewBox="0 0 600 24" preserveAspectRatio="none">
+                <path d="M0,12 L50,12 L65,12 L75,3 L85,21 L95,9 L110,12 L170,12 L185,12 L195,3 L205,21 L215,9 L230,12 L600,12" />
+                <path d="M0,12 L50,12 L65,12 L75,3 L85,21 L95,9 L110,12 L170,12 L185,12 L195,3 L205,21 L215,9 L230,12 L600,12" transform="translate(600,0)" />
+              </svg>
+            </div>
+            <h1 id="setupTitle">BP Measurement Tracker</h1>
+            <p class="lead">A calm, easy-to-use space for recording blood-pressure readings with confidence.</p>
           </header>
 
-          <div class="card">
+          <div class="stepper" aria-label="Step 1 of 3"><span class="active"></span><span></span><span></span></div>
+
+          <section class="panel">
             <h2>Who is being checked?</h2>
+            <p class="subtitle">Choose a profile to start a fresh measurement.</p>
 
-            <div class="profile-options">
-              <button type="button" class="profile-choice" data-patient="nana">Ramchandra<br />Yadav</button>
-              <button type="button" class="profile-choice" data-patient="other">Other</button>
+            <div class="profile-grid">
+              <button class="profile-choice" type="button" data-patient="nana">
+                <img src="assets/NANA.jpeg" alt="Ramchandra Yadav (Nana)" class="choice-image" />
+                <span class="choice-title">Ramchandra Yadav</span>
+                <span class="choice-copy">Personal tracker</span>
+              </button>
+              <button class="profile-choice" type="button" data-patient="other">
+                <img src="assets/MISC.webp" alt="Misc Profile" class="choice-image" />
+                <span class="choice-title">Other</span>
+                <span class="choice-copy">New profile entry</span>
+              </button>
             </div>
 
-            <div id="profilePanel" hidden>
-              <div class="profile-preview">
-                <img id="profileImage" class="profile-image" src="" alt="" />
-                <div>
-                  <strong id="profileName"></strong>
-                  <p id="profileDescription"></p>
-                </div>
+            <div id="patientDetails" hidden>
+              <div class="patient-summary">
+                <img id="patientImage" src="" alt="" />
+                <div><strong id="patientName"></strong><span id="patientCopy"></span></div>
               </div>
 
-              <div class="fields-grid">
+              <div class="fields">
                 <label class="field full">
-                  <span>Date</span>
-                  <input id="measurementDate" type="date" required />
+                  <span>Measurement Date</span>
+                  <span class="input-wrap">
+                    <input id="measureDate" type="date" required />
+                    <button id="calendarButton" class="calendar-button" type="button" aria-label="Open calendar">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18"></path></svg>
+                    </button>
+                  </span>
+                  <span id="dateHint" class="date-hint">Choose the day the readings were taken.</span>
                 </label>
 
-                <label class="field">
-                  <span>Month</span>
-                  <select id="measurementMonth" required>
-                    <option value="">Select month</option>
-                    <option value="01">January</option>
-                    <option value="02">February</option>
-                    <option value="03">March</option>
-                    <option value="04">April</option>
-                    <option value="05">May</option>
-                    <option value="06">June</option>
-                    <option value="07">July</option>
-                    <option value="08">August</option>
-                    <option value="09">September</option>
-                    <option value="10">October</option>
-                    <option value="11">November</option>
-                    <option value="12">December</option>
-                  </select>
-                </label>
-
-                <label class="field">
-                  <span>Year</span>
-                  <input id="measurementYear" type="number" inputmode="numeric" min="1900" max="2100" placeholder="2026" required />
-                </label>
-
-                <label class="field full">
-                  <span>Time of Day</span>
-                  <select id="timeOfDay" required>
-                    <option value="">Select time</option>
-                    <option value="Morning">Morning</option>
-                    <option value="Afternoon">Afternoon</option>
-                    <option value="Evening">Evening</option>
-                  </select>
-                </label>
-
-                <label class="field full" id="genderField" hidden>
-                  <span>Gender</span>
-                  <select id="gender">
-                    <option value="">Select gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                  </select>
-                </label>
+                <label class="field"><span>Month</span><select id="measureMonth" required><option value="">Select month</option><option value="01">January</option><option value="02">February</option><option value="03">March</option><option value="04">April</option><option value="05">May</option><option value="06">June</option><option value="07">July</option><option value="08">August</option><option value="09">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select></label>
+                <label class="field"><span>Year</span><input id="measureYear" type="number" min="1900" max="2100" inputmode="numeric" placeholder="2026" required /></label>
+                <label class="field full"><span>Time of Day</span><select id="timeOfDay" required><option value="">Select time of day</option><option value="Morning">Morning</option><option value="Afternoon">Afternoon</option><option value="Evening">Evening</option></select></label>
+                <label class="field full" id="genderRow" hidden><span>Gender</span><select id="gender"><option value="">Select gender</option><option value="Male">Male</option><option value="Female">Female</option></select></label>
               </div>
             </div>
 
-            <button type="button" id="nextButton" class="primary-button">Next: Add Readings</button>
-          </div>
+            <button class="primary" id="nextButton" type="button">Continue to Readings</button>
+          </section>
         </div>
       </section>
 
-      <section class="screen" id="readingsScreen" aria-labelledby="readingsHeading">
-        <div class="screen-content">
-          <div class="back-row">
-            <button type="button" class="text-button" id="backToSetup">← Back to details</button>
-          </div>
-
-          <header class="screen-header">
-            <img src="logo.png" alt="App Logo" class="app-logo" />
-            <p class="eyebrow">STEP 2 OF 3</p>
-            <h1 id="readingsHeading">Enter 3 Readings</h1>
-            <p class="intro">Take a moment between readings, then enter each systolic and diastolic value.</p>
+      <section class="screen" id="readingsScreen" aria-labelledby="readingsTitle">
+        <div class="content">
+          <button class="back-button" id="backToSetup" type="button">← Back to details</button>
+          <header class="brand">
+            <img src="assets/LOGO.png" alt="App Logo" class="app-logo" />
+            <p class="brand-kicker">STEP 2 OF 3</p>
+            <div class="ekg-strip" aria-hidden="true">
+              <svg class="ekg-track" viewBox="0 0 600 24" preserveAspectRatio="none">
+                <path d="M0,12 L50,12 L65,12 L75,3 L85,21 L95,9 L110,12 L170,12 L185,12 L195,3 L205,21 L215,9 L230,12 L600,12" />
+                <path d="M0,12 L50,12 L65,12 L75,3 L85,21 L95,9 L110,12 L170,12 L185,12 L195,3 L205,21 L215,9 L230,12 L600,12" transform="translate(600,0)" />
+              </svg>
+            </div>
+            <h1 id="readingsTitle">Take 3 Readings</h1>
+            <p class="lead">Enter each result clearly. The tracker will calculate the average automatically.</p>
           </header>
+          <div class="stepper" aria-label="Step 2 of 3"><span class="active"></span><span class="active"></span><span></span></div>
 
-          <div class="card">
+          <section class="panel">
+            <div class="readings-heading"><h2>Blood Pressure</h2><span class="mini-badge">mmHg</span></div>
+            <p class="subtitle">Systolic is the top number. Diastolic is the bottom number.</p>
             <div class="reading-list">
-              <div class="reading-card">
-                <span class="reading-number">01</span>
-                <label class="reading-field">SYSTOLIC
-                  <input class="reading-input" id="r1Sys" type="number" inputmode="numeric" min="1" max="300" step="1" placeholder="e.g. 120" />
-                </label>
-                <label class="reading-field">DIASTOLIC
-                  <input class="reading-input" id="r1Dia" type="number" inputmode="numeric" min="1" max="200" step="1" placeholder="e.g. 80" />
-                </label>
-              </div>
-
-              <div class="reading-card">
-                <span class="reading-number">02</span>
-                <label class="reading-field">SYSTOLIC
-                  <input class="reading-input" id="r2Sys" type="number" inputmode="numeric" min="1" max="300" step="1" placeholder="e.g. 120" />
-                </label>
-                <label class="reading-field">DIASTOLIC
-                  <input class="reading-input" id="r2Dia" type="number" inputmode="numeric" min="1" max="200" step="1" placeholder="e.g. 80" />
-                </label>
-              </div>
-
-              <div class="reading-card">
-                <span class="reading-number">03</span>
-                <label class="reading-field">SYSTOLIC
-                  <input class="reading-input" id="r3Sys" type="number" inputmode="numeric" min="1" max="300" step="1" placeholder="e.g. 120" />
-                </label>
-                <label class="reading-field">DIASTOLIC
-                  <input class="reading-input" id="r3Dia" type="number" inputmode="numeric" min="1" max="200" step="1" placeholder="e.g. 80" />
-                </label>
-              </div>
+              <article class="reading"><span class="reading-index">01</span><label class="bp-field">SYSTOLIC<input id="r1Sys" class="bp-input" type="number" inputmode="numeric" min="1" max="300" step="1" placeholder="120" /></label><label class="bp-field">DIASTOLIC<input id="r1Dia" class="bp-input" type="number" inputmode="numeric" min="1" max="200" step="1" placeholder="80" /></label></article>
+              <article class="reading"><span class="reading-index">02</span><label class="bp-field">SYSTOLIC<input id="r2Sys" class="bp-input" type="number" inputmode="numeric" min="1" max="300" step="1" placeholder="120" /></label><label class="bp-field">DIASTOLIC<input id="r2Dia" class="bp-input" type="number" inputmode="numeric" min="1" max="200" step="1" placeholder="80" /></label></article>
+              <article class="reading"><span class="reading-index">03</span><label class="bp-field">SYSTOLIC<input id="r3Sys" class="bp-input" type="number" inputmode="numeric" min="1" max="300" step="1" placeholder="120" /></label><label class="bp-field">DIASTOLIC<input id="r3Dia" class="bp-input" type="number" inputmode="numeric" min="1" max="200" step="1" placeholder="80" /></label></article>
             </div>
-
-            <button type="button" id="calculateButton" class="primary-button massive">Calculate Average &amp; View Results</button>
-          </div>
+            <p class="tip">Tip: Sit quietly for a few minutes and keep your arm supported while taking readings.</p>
+            <button class="primary large" id="calculateButton" type="button">Calculate Average &amp; View Results</button>
+          </section>
         </div>
       </section>
 
-      <section class="screen" id="resultsScreen" aria-labelledby="resultsHeading">
-        <div class="screen-content">
-          <div class="back-row">
-            <button type="button" class="text-button" id="backToReadings">← Edit readings</button>
-          </div>
-
-          <header class="screen-header">
-            <img src="logo.png" alt="App Logo" class="app-logo" />
-            <p class="eyebrow">RESULTS</p>
-            <h1 id="resultsHeading">Your BP Average</h1>
+      <section class="screen" id="resultsScreen" aria-labelledby="resultsTitle">
+        <div class="content">
+          <button class="back-button" id="backToReadings" type="button">← Edit readings</button>
+          <header class="brand">
+            <img src="assets/LOGO.png" alt="App Logo" class="app-logo" />
+            <p class="brand-kicker">STEP 3 OF 3</p>
+            <div class="ekg-strip" aria-hidden="true">
+              <svg class="ekg-track" viewBox="0 0 600 24" preserveAspectRatio="none">
+                <path d="M0,12 L50,12 L65,12 L75,3 L85,21 L95,9 L110,12 L170,12 L185,12 L195,3 L205,21 L215,9 L230,12 L600,12" />
+                <path d="M0,12 L50,12 L65,12 L75,3 L85,21 L95,9 L110,12 L170,12 L185,12 L195,3 L205,21 L215,9 L230,12 L600,12" transform="translate(600,0)" />
+              </svg>
+            </div>
+            <h1 id="resultsTitle">Your BP Average</h1>
+            <p class="lead">The result below uses the average of all three readings.</p>
           </header>
+          <div class="stepper" aria-label="Step 3 of 3"><span class="active"></span><span class="active"></span><span class="active"></span></div>
 
-          <div class="card">
-            <div class="results-averages">
-              <div class="average-card">
-                <span>Average Systolic</span>
-                <strong id="avgSysValue">--</strong>
-                <small>mmHg</small>
-              </div>
-              <div class="average-card">
-                <span>Average Diastolic</span>
-                <strong id="avgDiaValue">--</strong>
-                <small>mmHg</small>
-              </div>
+          <section class="panel">
+            <div class="averages">
+              <article class="average"><span>AVERAGE SYSTOLIC</span><strong id="avgSys">--</strong><small>mmHg</small></article>
+              <article class="average"><span>AVERAGE DIASTOLIC</span><strong id="avgDia">--</strong><small>mmHg</small></article>
             </div>
 
-            <div id="statusCard" class="status-card normal" aria-live="polite">
-              <span class="status-label">STATUS</span>
-              <h2 id="statusTitle">Awaiting calculation</h2>
-              <p id="statusText">Your result and precaution will appear here.</p>
-            </div>
+            <article class="status-card normal" id="statusCard" aria-live="polite">
+              <span class="label"><span class="status-dot" aria-hidden="true"></span>STATUS</span>
+              <h2 id="statusTitle">Ready to calculate</h2>
+              <p id="statusMessage">Your result and next-step guidance will appear here.</p>
+            </article>
 
-            <button type="button" id="stopAlarmButton" class="alarm-stop" hidden>Stop Alarm</button>
-
-            <p class="medical-note">This tracker supports record keeping and does not replace professional medical advice.</p>
-
-            <button type="button" id="saveButton" class="primary-button massive">Save to Tracker</button>
-            <button type="button" id="newMeasurementButton" class="secondary-button">Start a New Measurement</button>
-          </div>
+            <button class="danger-button" id="stopAlarmButton" type="button" hidden>Stop Alarm</button>
+            <p class="disclaimer">This tracker helps with record keeping and is not a substitute for professional medical advice.</p>
+            <button class="primary large" id="saveButton" type="button">Save to Tracker</button>
+            <button class="secondary" id="newButton" type="button">Start New Measurement</button>
+          </section>
         </div>
       </section>
     </div>
   </main>
 
-  <footer class="app-footer">
-    <span>Made by Yash</span>
-    <button type="button" class="contact-button" id="contactButton">Contact</button>
+  <footer class="footer">
+    <span class="footer-brand">Made by Yash</span>
+    <span class="footer-actions">
+      <a class="pill-button logs-link" id="viewLogsButton" href="https://docs.google.com/spreadsheets/d/12jDlqAD-9-v9IcRu6V7dEVvewSPTMTMkz8MweTHwJ04/edit?usp=sharing" target="_blank" rel="noopener noreferrer">VIEW READING LOGS</a>
+      <button class="pill-button contact" id="contactButton" type="button">Contact</button>
+    </span>
   </footer>
-
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-
-  <div class="success-overlay" id="successOverlay" role="dialog" aria-modal="true" aria-labelledby="successTitle">
-    <div class="success-modal" id="successModal">
-      <div class="check-circle"><div class="checkmark"></div></div>
-      <h2 id="successTitle">Saved Successfully</h2>
-      <p>Your blood-pressure measurement has been sent to the tracker.</p>
-      <button type="button" id="successNewButton" class="primary-button">Record Another Measurement</button>
-    </div>
-  </div>
+  <div class="success-overlay" id="successOverlay" role="dialog" aria-modal="true" aria-labelledby="successTitle"><div class="success-dialog" id="successDialog"><div class="success-ring"><div class="check"></div></div><h2 id="successTitle">Saved Successfully</h2><p>Your measurement has been sent to the BP tracker.</p><button class="primary" id="successNewButton" type="button">Record Another Measurement</button></div></div>
 
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbweyZUAnBtIT1ktrrEF6JIPn2Vh7VD-yJRrHAhFALBMNSrls88-lAb-PIM7X_jOyBWy/exec";
-
-    const state = {
-      patientType: null,
-      readings: null,
-      avgSys: null,
-      avgDia: null,
-      evaluation: null
+    const patientProfiles = {
+      nana: { name: "Ramchandra Yadav", image: "assets/NANA.jpeg", alt: "Ramchandra Yadav (Nana)", detail: "Personal blood-pressure tracker" },
+      other: { name: "Other Profile", image: "assets/MISC.webp", alt: "Misc Profile", detail: "New blood-pressure tracker entry" }
     };
-
-    const profiles = {
-      nana: {
-        name: "Ramchandra Yadav",
-        image: "nana.jpg",
-        alt: "Ramchandra Yadav (Nana)",
-        description: "Personal blood-pressure record"
-      },
-      other: {
-        name: "Other Profile",
-        image: "misc.jpg",
-        alt: "Misc Profile",
-        description: "Record a blood-pressure measurement"
-      }
+    const state = { patientType: null, readings: null, avgSys: null, avgDia: null, result: null };
+    const $ = (selector) => document.querySelector(selector);
+    const els = {
+      screens: document.querySelectorAll(".screen"), profileButtons: document.querySelectorAll(".profile-choice"), patientDetails: $("#patientDetails"), patientImage: $("#patientImage"), patientName: $("#patientName"), patientCopy: $("#patientCopy"), date: $("#measureDate"), month: $("#measureMonth"), year: $("#measureYear"), time: $("#timeOfDay"), gender: $("#gender"), genderRow: $("#genderRow"), dateHint: $("#dateHint"), toast: $("#toast"), click: $("#clickSound"), alarm: $("#alarmSound"), statusCard: $("#statusCard"), statusTitle: $("#statusTitle"), statusMessage: $("#statusMessage"), avgSys: $("#avgSys"), avgDia: $("#avgDia"), stopAlarm: $("#stopAlarmButton"), save: $("#saveButton"), success: $("#successOverlay"), successDialog: $("#successDialog")
     };
-
-    const elements = {
-      screens: document.querySelectorAll(".screen"),
-      profileButtons: document.querySelectorAll(".profile-choice"),
-      profilePanel: document.getElementById("profilePanel"),
-      profileImage: document.getElementById("profileImage"),
-      profileName: document.getElementById("profileName"),
-      profileDescription: document.getElementById("profileDescription"),
-      date: document.getElementById("measurementDate"),
-      month: document.getElementById("measurementMonth"),
-      year: document.getElementById("measurementYear"),
-      time: document.getElementById("timeOfDay"),
-      gender: document.getElementById("gender"),
-      genderField: document.getElementById("genderField"),
-      nextButton: document.getElementById("nextButton"),
-      calculateButton: document.getElementById("calculateButton"),
-      saveButton: document.getElementById("saveButton"),
-      avgSys: document.getElementById("avgSysValue"),
-      avgDia: document.getElementById("avgDiaValue"),
-      statusCard: document.getElementById("statusCard"),
-      statusTitle: document.getElementById("statusTitle"),
-      statusText: document.getElementById("statusText"),
-      stopAlarmButton: document.getElementById("stopAlarmButton"),
-      toast: document.getElementById("toast"),
-      clickSound: document.getElementById("clickSound"),
-      alarmSound: document.getElementById("alarmSound"),
-      successOverlay: document.getElementById("successOverlay"),
-      trailLayer: document.getElementById("trail-layer")
-    };
-
     let toastTimer;
-    let lastTrailTime = 0;
 
-    function showScreen(id) {
-      elements.screens.forEach((screen) => {
-        screen.classList.toggle("active", screen.id === id);
-      });
-    }
+    function showScreen(id) { els.screens.forEach((screen) => screen.classList.toggle("active", screen.id === id)); }
+    function toast(message) { clearTimeout(toastTimer); els.toast.textContent = message; els.toast.classList.add("show"); toastTimer = setTimeout(() => els.toast.classList.remove("show"), 2800); }
+    function clickSound() { try { els.click.currentTime = 0; els.click.volume = 0.28; els.click.play().catch(() => {}); } catch (_) {} }
+    function startAlarm() { try { els.alarm.currentTime = 0; els.alarm.volume = 0.8; els.alarm.play().catch(() => {}); } catch (_) {} }
+    function stopAlarm() { els.alarm.pause(); els.alarm.currentTime = 0; }
+    function clearInvalid() { document.querySelectorAll(".is-invalid").forEach((field) => field.classList.remove("is-invalid")); }
 
-    function showToast(message) {
-      clearTimeout(toastTimer);
-      elements.toast.textContent = message;
-      elements.toast.classList.add("show");
-      toastTimer = setTimeout(() => elements.toast.classList.remove("show"), 2600);
-    }
-
-    function playClick() {
-      try {
-        elements.clickSound.currentTime = 0;
-        elements.clickSound.volume = 0.32;
-        elements.clickSound.play().catch(() => {});
-      } catch (_) {}
-    }
-
-    function startAlarm() {
-      try {
-        elements.alarmSound.currentTime = 0;
-        elements.alarmSound.volume = 0.82;
-        elements.alarmSound.play().catch(() => {});
-      } catch (_) {}
-    }
-
-    function stopAlarm() {
-      elements.alarmSound.pause();
-      elements.alarmSound.currentTime = 0;
-    }
-
-    function clearInvalidFields() {
-      document.querySelectorAll(".is-invalid").forEach((field) => field.classList.remove("is-invalid"));
-    }
-
-    function selectProfile(patientType) {
-      state.patientType = patientType;
-      const profile = profiles[patientType];
-
-      elements.profileButtons.forEach((button) => {
-        button.classList.toggle("selected", button.dataset.patient === patientType);
-      });
-
-      elements.profilePanel.hidden = false;
-      elements.profileImage.src = profile.image;
-      elements.profileImage.alt = profile.alt;
-      elements.profileName.textContent = profile.name;
-      elements.profileDescription.textContent = profile.description;
-      elements.genderField.hidden = patientType !== "other";
-
-      if (patientType !== "other") {
-        elements.gender.value = "";
+    function animateValue(el, target) {
+      el.classList.remove("pop");
+      void el.offsetWidth;
+      el.classList.add("pop");
+      const duration = 520;
+      const start = performance.now();
+      function tick(now) {
+        const progress = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.round(target * eased);
+        if (progress < 1) requestAnimationFrame(tick);
+        else el.textContent = target;
       }
-
-      clearInvalidFields();
+      requestAnimationFrame(tick);
     }
 
-    function syncMonthAndYearFromDate() {
-      if (!elements.date.value) return;
-
-      const [year, month] = elements.date.value.split("-");
-      elements.month.value = month;
-      elements.year.value = year;
-      elements.month.classList.remove("is-invalid");
-      elements.year.classList.remove("is-invalid");
+    function choosePatient(type) {
+      state.patientType = type;
+      const profile = patientProfiles[type];
+      els.profileButtons.forEach((button) => button.classList.toggle("selected", button.dataset.patient === type));
+      els.patientDetails.hidden = false;
+      els.patientImage.src = profile.image;
+      els.patientImage.alt = profile.alt;
+      els.patientName.textContent = profile.name;
+      els.patientCopy.textContent = profile.detail;
+      els.genderRow.hidden = type !== "other";
+      if (type !== "other") els.gender.value = "";
+      clearInvalid();
     }
 
-    function validateSetup() {
-      clearInvalidFields();
+    function showNativeCalendar() {
+      if (typeof els.date.showPicker === "function") els.date.showPicker();
+      else els.date.focus();
+    }
 
-      if (!state.patientType) {
-        showToast("Please choose a profile first.");
-        return false;
+    function syncDateContext() {
+      if (!els.date.value) { els.dateHint.textContent = "Choose the day the readings were taken."; return; }
+      const [year, month, day] = els.date.value.split("-");
+      els.month.value = month;
+      els.year.value = year;
+      const date = new Date(Number(year), Number(month) - 1, Number(day), 12);
+      els.dateHint.textContent = date.toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+      els.month.classList.remove("is-invalid");
+      els.year.classList.remove("is-invalid");
+    }
+
+    function validSetup() {
+      clearInvalid();
+      if (!state.patientType) { toast("Choose a profile to continue."); return false; }
+      const fields = [els.date, els.month, els.year, els.time];
+      if (state.patientType === "other") fields.push(els.gender);
+      const incomplete = fields.filter((field) => !field.value);
+      if (incomplete.length) { incomplete.forEach((field) => field.classList.add("is-invalid")); toast("Please complete every required field."); return false; }
+      const [dateYear, dateMonth] = els.date.value.split("-");
+      if (els.month.value !== dateMonth || String(els.year.value) !== dateYear) {
+        els.month.classList.add("is-invalid"); els.year.classList.add("is-invalid"); toast("Month and year must match your selected date."); return false;
       }
-
-      const fields = [elements.date, elements.month, elements.year, elements.time];
-      if (state.patientType === "other") fields.push(elements.gender);
-
-      const emptyFields = fields.filter((field) => !field.value);
-      if (emptyFields.length) {
-        emptyFields.forEach((field) => field.classList.add("is-invalid"));
-        showToast("Please complete all required details.");
-        return false;
-      }
-
-      const [selectedYear, selectedMonth] = elements.date.value.split("-");
-      if (elements.month.value !== selectedMonth || String(elements.year.value) !== selectedYear) {
-        elements.month.classList.add("is-invalid");
-        elements.year.classList.add("is-invalid");
-        showToast("Month and year must match the selected date.");
-        return false;
-      }
-
       return true;
     }
 
-    function getReadingInputs() {
-      return [
-        document.getElementById("r1Sys"),
-        document.getElementById("r1Dia"),
-        document.getElementById("r2Sys"),
-        document.getElementById("r2Dia"),
-        document.getElementById("r3Sys"),
-        document.getElementById("r3Dia")
-      ];
-    }
-
-    function validateReadings() {
+    function getReadingInputs() { return [$("#r1Sys"), $("#r1Dia"), $("#r2Sys"), $("#r2Dia"), $("#r3Sys"), $("#r3Dia")]; }
+    function validReadings() {
       const inputs = getReadingInputs();
       inputs.forEach((input) => input.classList.remove("is-invalid"));
-
-      const invalidInputs = inputs.filter((input) => {
-        const value = Number(input.value);
-        return input.value === "" || !Number.isFinite(value) || value < 1 || value > Number(input.max);
-      });
-
-      if (invalidInputs.length) {
-        invalidInputs.forEach((input) => input.classList.add("is-invalid"));
-        showToast("Please enter valid values for all 3 readings.");
-        return false;
-      }
-
+      const invalid = inputs.filter((input) => input.value === "" || !Number.isFinite(Number(input.value)) || Number(input.value) < 1 || Number(input.value) > Number(input.max));
+      if (invalid.length) { invalid.forEach((input) => input.classList.add("is-invalid")); toast("Please enter valid numbers for all three readings."); return false; }
       state.readings = inputs.map((input) => Number(input.value));
       return true;
     }
 
-    function evaluateBP(sys, dia) {
-      if (sys < 60) {
-        return {
-          status: "Extreme Low",
-          level: "critical",
-          alarm: true,
-          message: "CRITICAL LOW! System failure risk. Call an ambulance immediately."
-        };
-      }
-
-      if (sys > 170 || dia > 110) {
-        return {
-          status: "Extreme High",
-          level: "critical",
-          alarm: true,
-          message: "EXTREME DANGER! High risk of stroke or heart attack. Call emergency services right now!"
-        };
-      }
-
-      if ((sys >= 141 && sys <= 170) || (dia >= 91 && dia <= 110)) {
-        return {
-          status: "Very High",
-          level: "danger",
-          alarm: true,
-          message: "Critical high blood pressure! Contact a doctor immediately. Do not exert yourself."
-        };
-      }
-
-      if ((sys >= 121 && sys <= 140) || (dia >= 81 && dia <= 90)) {
-        return {
-          status: "High",
-          level: "high",
-          alarm: false,
-          message: "Elevated readings. Monitor diet and reduce salt intake."
-        };
-      }
-
-      if (sys >= 100 && sys <= 120 && dia >= 70 && dia <= 80) {
-        return {
-          status: "Normal",
-          level: "normal",
-          alarm: false,
-          message: "Optimal blood pressure. Keep up the healthy routine!"
-        };
-      }
-
-      if (sys >= 60 && sys <= 89 && dia < 60) {
-        return {
-          status: "Very Low",
-          level: "danger",
-          alarm: true,
-          message: "Seek immediate medical attention. Drink fluids if conscious."
-        };
-      }
-
-      if ((sys >= 90 && sys <= 100) || (dia >= 60 && dia <= 70) || sys < 100 || dia < 70) {
-        return {
-          status: "Low",
-          level: "low",
-          alarm: false,
-          message: "Blood pressure is on the lower side. Rest and stay hydrated."
-        };
-      }
-
-      return {
-        status: "High",
-        level: "high",
-        alarm: false,
-        message: "Elevated readings. Monitor diet and reduce salt intake."
-      };
+    function classify(sys, dia) {
+      if (sys < 60) return { status: "Extreme Low", level: "critical", alarm: true, text: "CRITICAL LOW! System failure risk. Call an ambulance immediately." };
+      if (sys > 170 || dia > 110) return { status: "Extreme High", level: "critical", alarm: true, text: "EXTREME DANGER! High risk of stroke or heart attack. Call emergency services right now!" };
+      if ((sys >= 141 && sys <= 170) || (dia >= 91 && dia <= 110)) return { status: "Very High", level: "danger", alarm: true, text: "Critical high blood pressure! Contact a doctor immediately. Do not exert yourself." };
+      if ((sys >= 121 && sys <= 140) || (dia >= 81 && dia <= 90)) return { status: "High", level: "high", alarm: false, text: "Elevated readings. Monitor diet and reduce salt intake." };
+      if (sys >= 100 && sys <= 120 && dia >= 70 && dia <= 80) return { status: "Normal", level: "normal", alarm: false, text: "Optimal blood pressure. Keep up the healthy routine!" };
+      if (sys >= 60 && sys <= 89 && dia < 60) return { status: "Very Low", level: "danger", alarm: true, text: "Seek immediate medical attention. Drink fluids if conscious." };
+      if ((sys >= 90 && sys <= 100) || (dia >= 60 && dia <= 70) || sys < 100 || dia < 70) return { status: "Low", level: "low", alarm: false, text: "Blood pressure is on the lower side. Rest and stay hydrated." };
+      return { status: "High", level: "high", alarm: false, text: "Elevated readings. Monitor diet and reduce salt intake." };
     }
 
-    function calculateResults() {
-      if (!validateReadings()) return;
-
+    function calculate() {
+      if (!validReadings()) return;
       stopAlarm();
-
       const [r1Sys, r1Dia, r2Sys, r2Dia, r3Sys, r3Dia] = state.readings;
       state.avgSys = Math.round((r1Sys + r2Sys + r3Sys) / 3);
       state.avgDia = Math.round((r1Dia + r2Dia + r3Dia) / 3);
-      state.evaluation = evaluateBP(state.avgSys, state.avgDia);
-
-      elements.avgSys.textContent = state.avgSys;
-      elements.avgDia.textContent = state.avgDia;
-      elements.statusCard.className = `status-card ${state.evaluation.level}`;
-      elements.statusTitle.textContent = state.evaluation.status;
-      elements.statusText.textContent = state.evaluation.message;
-      elements.stopAlarmButton.hidden = !state.evaluation.alarm;
-      elements.saveButton.disabled = false;
-      elements.saveButton.textContent = "Save to Tracker";
-
+      state.result = classify(state.avgSys, state.avgDia);
+      animateValue(els.avgSys, state.avgSys);
+      animateValue(els.avgDia, state.avgDia);
+      els.statusCard.className = `status-card ${state.result.level}`;
+      els.statusTitle.textContent = state.result.status;
+      els.statusMessage.textContent = state.result.text;
+      els.stopAlarm.hidden = !state.result.alarm;
+      els.save.disabled = false;
+      els.save.textContent = "Save to Tracker";
       showScreen("resultsScreen");
-
-      if (state.evaluation.alarm) {
-        setTimeout(startAlarm, 220);
-      }
+      if (state.result.alarm) setTimeout(startAlarm, 300);
     }
 
-    function buildPayload() {
-      const [year, month, day] = elements.date.value.split("-");
+    function payload() {
+      const [year, month, day] = els.date.value.split("-");
       const localDate = new Date(Number(year), Number(month) - 1, Number(day), 12);
-      const weekdayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
       const [r1Sys, r1Dia, r2Sys, r2Dia, r3Sys, r3Dia] = state.readings;
-
-      const payload = {
-        patientType: state.patientType,
-        date: `${day}-${month}-${year}`,
-        day: weekdayNames[localDate.getDay()],
-        timeOfDay: elements.time.value,
-        r1Sys,
-        r1Dia,
-        r2Sys,
-        r2Dia,
-        r3Sys,
-        r3Dia,
-        avgSys: state.avgSys,
-        avgDia: state.avgDia,
-        status: state.evaluation.status
-      };
-
-      if (state.patientType === "other") {
-        payload.gender = elements.gender.value;
-      }
-
-      return payload;
+      const data = { patientType: state.patientType, date: `${day}-${month}-${year}`, day: weekdays[localDate.getDay()], timeOfDay: els.time.value, r1Sys, r1Dia, r2Sys, r2Dia, r3Sys, r3Dia, avgSys: state.avgSys, avgDia: state.avgDia, status: state.result.status };
+      if (state.patientType === "other") data.gender = els.gender.value;
+      return data;
     }
 
-    function createConfetti() {
-      const modal = document.getElementById("successModal");
-      modal.querySelectorAll(".confetti").forEach((piece) => piece.remove());
-
-      const colors = ["#D32F2F", "#f4b942", "#1a8b50", "#ff9087", "#6e7ee9"];
-      for (let i = 0; i < 28; i += 1) {
-        const piece = document.createElement("span");
-        piece.className = "confetti";
-        piece.style.left = `${Math.random() * 100}%`;
-        piece.style.background = colors[i % colors.length];
-        piece.style.animationDelay = `${Math.random() * 0.38}s`;
-        piece.style.transform = `rotate(${Math.random() * 180}deg)`;
-        modal.appendChild(piece);
-      }
+    function confetti() {
+      els.successDialog.querySelectorAll(".confetti").forEach((piece) => piece.remove());
+      ["#7b2ff7", "#ff3b5c", "#ff9f40", "#00d9b5", "#ffc24b"].forEach((color, index) => {
+        for (let i = 0; i < 6; i += 1) {
+          const piece = document.createElement("i");
+          piece.className = "confetti";
+          piece.style.left = `${Math.random() * 100}%`;
+          piece.style.background = color;
+          piece.style.animationDelay = `${index * 0.055 + Math.random() * 0.24}s`;
+          els.successDialog.appendChild(piece);
+        }
+      });
     }
 
-    async function saveToTracker() {
-      if (!state.evaluation || !state.readings) {
-        showToast("Please calculate the results first.");
-        return;
-      }
-
-      elements.saveButton.disabled = true;
-      elements.saveButton.textContent = "Saving…";
-
+    async function save() {
+      if (!state.result) { toast("Calculate your result before saving."); return; }
+      els.save.disabled = true;
+      els.save.textContent = "Saving securely…";
       try {
-        await fetch(API_URL, {
-          method: "POST",
-          mode: "no-cors",
-          headers: {
-            "Content-Type": "text/plain;charset=utf-8"
-          },
-          body: JSON.stringify(buildPayload())
-        });
-
+        await fetch(API_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload()) });
         stopAlarm();
-        createConfetti();
-        elements.successOverlay.classList.add("show");
-        elements.saveButton.textContent = "Saved ✓";
+        confetti();
+        els.success.classList.add("show");
+        els.save.textContent = "Saved ✓";
       } catch (_) {
-        elements.saveButton.disabled = false;
-        elements.saveButton.textContent = "Save to Tracker";
-        showToast("Could not save right now. Please check your connection and try again.");
+        els.save.disabled = false;
+        els.save.textContent = "Save to Tracker";
+        toast("Unable to save now. Please check your internet and try again.");
       }
     }
 
-    function resetApp() {
+    function reset() {
       stopAlarm();
-      state.patientType = null;
-      state.readings = null;
-      state.avgSys = null;
-      state.avgDia = null;
-      state.evaluation = null;
-
-      document.querySelectorAll("input").forEach((input) => {
-        if (input.type !== "date") input.value = "";
-        else input.value = "";
-      });
-
-      document.querySelectorAll("select").forEach((select) => {
-        select.value = "";
-      });
-
-      elements.profileButtons.forEach((button) => button.classList.remove("selected"));
-      elements.profilePanel.hidden = true;
-      elements.genderField.hidden = true;
-      elements.stopAlarmButton.hidden = true;
-      elements.successOverlay.classList.remove("show");
-      clearInvalidFields();
+      Object.assign(state, { patientType: null, readings: null, avgSys: null, avgDia: null, result: null });
+      document.querySelectorAll("input").forEach((input) => input.value = "");
+      document.querySelectorAll("select").forEach((select) => select.value = "");
+      els.profileButtons.forEach((button) => button.classList.remove("selected"));
+      els.patientDetails.hidden = true;
+      els.genderRow.hidden = true;
+      els.dateHint.textContent = "Choose the day the readings were taken.";
+      els.stopAlarm.hidden = true;
+      els.success.classList.remove("show");
+      clearInvalid();
       showScreen("setupScreen");
     }
 
-    async function copyContactNumber() {
+    async function copyContact() {
       const number = "9060170251";
-
       try {
-        if (navigator.clipboard && window.isSecureContext) {
-          await navigator.clipboard.writeText(number);
-        } else {
-          const helper = document.createElement("textarea");
-          helper.value = number;
-          helper.style.position = "fixed";
-          helper.style.opacity = "0";
-          document.body.appendChild(helper);
-          helper.select();
-          document.execCommand("copy");
-          helper.remove();
+        if (navigator.clipboard && window.isSecureContext) await navigator.clipboard.writeText(number);
+        else {
+          const area = document.createElement("textarea"); area.value = number; area.style.position = "fixed"; area.style.opacity = "0"; document.body.appendChild(area); area.select(); document.execCommand("copy"); area.remove();
         }
+        toast("Number Copied!");
+      } catch (_) { toast(`Contact number: ${number}`); }
+    }
 
-        showToast("Number Copied!");
-      } catch (_) {
-        showToast(`Contact number: ${number}`);
+    function createRain() {
+      const rain = $("#rainLayer");
+      const count = window.matchMedia("(max-width: 600px)").matches ? 42 : 66;
+      const palette = ["#ff9f40", "#ffc24b", "#7b2ff7", "#00d9b5", "#ff6b8b"];
+      for (let i = 0; i < count; i += 1) {
+        const drop = document.createElement("i");
+        drop.className = "rain-drop";
+        const color = palette[Math.floor(Math.random() * palette.length)];
+        drop.style.background = `linear-gradient(180deg, transparent, ${color})`;
+        drop.style.left = `${Math.random() * 112 - 9}%`;
+        drop.style.animationDuration = `${0.75 + Math.random() * 0.9}s`;
+        drop.style.animationDelay = `${-Math.random() * 2}s`;
+        drop.style.opacity = `${0.16 + Math.random() * 0.26}`;
+        rain.appendChild(drop);
       }
     }
 
-    document.addEventListener("click", (event) => {
-      if (event.target.closest("button")) playClick();
-    }, true);
+    function spawnRipple(event, el) {
+      const rect = el.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height) * 1.8;
+      const span = document.createElement("span");
+      span.className = "click-ripple";
+      span.style.width = `${size}px`;
+      span.style.height = `${size}px`;
+      const originX = (event.clientX ?? rect.left + rect.width / 2) - rect.left - size / 2;
+      const originY = (event.clientY ?? rect.top + rect.height / 2) - rect.top - size / 2;
+      span.style.left = `${originX}px`;
+      span.style.top = `${originY}px`;
+      el.appendChild(span);
+      span.addEventListener("animationend", () => span.remove());
+    }
 
-    document.addEventListener("change", (event) => {
-      if (event.target.matches("select")) playClick();
+    function initSmoothTrail() {
+      const canvas = $("#touchCanvas"), ctx = canvas.getContext("2d");
+      let scale = Math.min(window.devicePixelRatio || 1, 2), points = [], ripples = [], last = null, previous = performance.now();
+      function size() { scale = Math.min(window.devicePixelRatio || 1, 2); canvas.width = innerWidth * scale; canvas.height = innerHeight * scale; canvas.style.width = `${innerWidth}px`; canvas.style.height = `${innerHeight}px`; ctx.setTransform(scale, 0, 0, scale, 0, 0); }
+      function pushPoint(x, y, burst = false) {
+        const now = performance.now();
+        if (last) {
+          const distance = Math.hypot(x - last.x, y - last.y);
+          const steps = Math.max(1, Math.ceil(distance / 13));
+          for (let i = 1; i <= steps; i += 1) points.push({ x: last.x + (x - last.x) * i / steps, y: last.y + (y - last.y) * i / steps, born: now });
+        } else points.push({ x, y, born: now });
+        if (burst) ripples.push({ x, y, born: now });
+        last = { x, y };
+      }
+      function frame(now) {
+        const delta = now - previous; previous = now;
+        ctx.clearRect(0, 0, innerWidth, innerHeight);
+        points = points.filter((point) => now - point.born < 470);
+        ripples = ripples.filter((ripple) => now - ripple.born < 600);
+        if (points.length > 1) {
+          ctx.save();
+          ctx.lineCap = "round"; ctx.lineJoin = "round";
+          for (let i = 1; i < points.length; i += 1) {
+            const age = now - points[i].born;
+            const alpha = Math.max(0, 1 - age / 470) * 0.5;
+            ctx.beginPath();
+            ctx.moveTo(points[i - 1].x, points[i - 1].y);
+            ctx.lineTo(points[i].x, points[i].y);
+            ctx.strokeStyle = `rgba(180, 100, 255, ${alpha})`;
+            ctx.lineWidth = Math.max(1.5, 5 - age / 145);
+            ctx.shadowBlur = 12; ctx.shadowColor = "rgba(255, 140, 105, .8)";
+            ctx.stroke();
+          }
+          ctx.restore();
+        }
+        ripples.forEach((ripple) => {
+          const age = now - ripple.born, progress = age / 600;
+          ctx.beginPath(); ctx.arc(ripple.x, ripple.y, 7 + progress * 30, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(255, 209, 140, ${Math.max(0, 0.72 - progress * 0.72)})`;
+          ctx.lineWidth = 1.8; ctx.stroke();
+        });
+        if (delta >= 0) requestAnimationFrame(frame);
+      }
+      window.addEventListener("resize", size, { passive: true });
+      window.addEventListener("pointermove", (event) => pushPoint(event.clientX, event.clientY), { passive: true });
+      window.addEventListener("pointerdown", (event) => pushPoint(event.clientX, event.clientY, true), { passive: true });
+      window.addEventListener("pointerleave", () => { last = null; });
+      size(); requestAnimationFrame(frame);
+    }
+
+    document.addEventListener("click", (event) => { if (event.target.closest("button, a.pill-button")) clickSound(); }, true);
+    document.addEventListener("pointerdown", (event) => {
+      const rippleTarget = event.target.closest(".primary, .secondary, .danger-button, .pill-button, .profile-choice, .calendar-button");
+      if (rippleTarget) spawnRipple(event, rippleTarget);
     });
-
-    elements.profileButtons.forEach((button) => {
-      button.addEventListener("click", () => selectProfile(button.dataset.patient));
-    });
-
-    elements.date.addEventListener("change", syncMonthAndYearFromDate);
-
-    elements.nextButton.addEventListener("click", () => {
-      if (validateSetup()) showScreen("readingsScreen");
-    });
-
-    elements.calculateButton.addEventListener("click", calculateResults);
-    elements.saveButton.addEventListener("click", saveToTracker);
-    elements.stopAlarmButton.addEventListener("click", stopAlarm);
-    document.getElementById("contactButton").addEventListener("click", copyContactNumber);
-
-    document.getElementById("backToSetup").addEventListener("click", () => showScreen("setupScreen"));
-    document.getElementById("backToReadings").addEventListener("click", () => {
-      stopAlarm();
-      showScreen("readingsScreen");
-    });
-
-    document.getElementById("newMeasurementButton").addEventListener("click", resetApp);
-    document.getElementById("successNewButton").addEventListener("click", resetApp);
-
-    document.addEventListener("pointermove", (event) => {
-      const now = performance.now();
-      if (now - lastTrailTime < 42) return;
-      lastTrailTime = now;
-
-      const dot = document.createElement("span");
-      dot.className = "touch-trail";
-      dot.style.left = `${event.clientX}px`;
-      dot.style.top = `${event.clientY}px`;
-      dot.style.color = Math.random() > 0.48 ? "#D32F2F" : "#f0b99e";
-      dot.style.background = "currentColor";
-      elements.trailLayer.appendChild(dot);
-
-      setTimeout(() => dot.remove(), 560);
-    }, { passive: true });
+    document.addEventListener("change", (event) => { if (event.target.matches("select")) clickSound(); });
+    els.profileButtons.forEach((button) => button.addEventListener("click", () => choosePatient(button.dataset.patient)));
+    els.date.addEventListener("change", syncDateContext);
+    $("#calendarButton").addEventListener("click", showNativeCalendar);
+    $("#nextButton").addEventListener("click", () => { if (validSetup()) showScreen("readingsScreen"); });
+    $("#backToSetup").addEventListener("click", () => showScreen("setupScreen"));
+    $("#backToReadings").addEventListener("click", () => { stopAlarm(); showScreen("readingsScreen"); });
+    $("#calculateButton").addEventListener("click", calculate);
+    els.stopAlarm.addEventListener("click", stopAlarm);
+    els.save.addEventListener("click", save);
+    $("#newButton").addEventListener("click", reset);
+    $("#successNewButton").addEventListener("click", reset);
+    $("#contactButton").addEventListener("click", copyContact);
+    createRain();
+    initSmoothTrail();
   </script>
 </body>
 </html>
