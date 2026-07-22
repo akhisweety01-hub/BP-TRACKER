@@ -1,0 +1,1475 @@
+<!doctype html>
+<!--
+  GitHub Pages is case-sensitive:
+  Upload these files beside index.html:
+  LOGO.png  -> logo.png
+  NANA.jpeg -> nana.jpg
+  MISC.webp -> misc.jpg
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#D32F2F" />
+  <title>BP Measurement Tracker</title>
+
+  <style>
+    :root {
+      --cream: #FDFBF7;
+      --paper: rgba(255, 255, 255, 0.84);
+      --ink: #1f2937;
+      --muted: #64748b;
+      --red: #D32F2F;
+      --red-dark: #a71919;
+      --red-soft: #fff0ef;
+      --green: #177245;
+      --green-soft: #e9f8ef;
+      --yellow: #9a6700;
+      --yellow-soft: #fff7d6;
+      --line: rgba(125, 72, 64, 0.16);
+      --shadow: 0 18px 44px rgba(100, 54, 45, 0.14);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      background: var(--cream);
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      overflow: hidden;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(255, 224, 213, 0.82), transparent 36%),
+        radial-gradient(circle at bottom right, rgba(255, 239, 204, 0.65), transparent 34%),
+        var(--cream);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    body::before,
+    body::after {
+      position: fixed;
+      z-index: -2;
+      width: 42vw;
+      height: 42vw;
+      min-width: 290px;
+      min-height: 290px;
+      content: "";
+      filter: blur(34px);
+      border-radius: 50%;
+      opacity: 0.36;
+      pointer-events: none;
+      animation: floatOrb 18s ease-in-out infinite alternate;
+    }
+
+    body::before {
+      top: -13vw;
+      left: -14vw;
+      background: #f6a99b;
+    }
+
+    body::after {
+      right: -16vw;
+      bottom: -14vw;
+      background: #ffd9a8;
+      animation-delay: -8s;
+      animation-duration: 23s;
+    }
+
+    .ambient-orb {
+      position: fixed;
+      z-index: -1;
+      width: 32vw;
+      height: 32vw;
+      min-width: 220px;
+      min-height: 220px;
+      border-radius: 50%;
+      background: rgba(211, 47, 47, 0.12);
+      filter: blur(28px);
+      pointer-events: none;
+      animation: drift 20s linear infinite;
+    }
+
+    .ambient-orb.one {
+      top: 29%;
+      left: 62%;
+    }
+
+    .ambient-orb.two {
+      top: 70%;
+      left: 8%;
+      background: rgba(255, 193, 122, 0.2);
+      animation-duration: 27s;
+      animation-direction: reverse;
+    }
+
+    @keyframes floatOrb {
+      from { transform: translate3d(0, 0, 0) scale(1); }
+      to { transform: translate3d(11vw, 8vh, 0) scale(1.2); }
+    }
+
+    @keyframes drift {
+      0% { transform: translate3d(0, 0, 0) scale(1); }
+      50% { transform: translate3d(-12vw, -7vh, 0) scale(1.24); }
+      100% { transform: translate3d(0, 0, 0) scale(1); }
+    }
+
+    #trail-layer {
+      position: fixed;
+      z-index: 100;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .touch-trail {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 18px currentColor;
+      animation: trailFade 550ms ease-out forwards;
+    }
+
+    @keyframes trailFade {
+      from {
+        opacity: 0.82;
+        transform: translate(-50%, -50%) scale(1);
+      }
+      to {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.1);
+      }
+    }
+
+    .app-shell {
+      position: relative;
+      width: min(100%, 680px);
+      height: 100dvh;
+      margin: 0 auto;
+    }
+
+    .screen-stage {
+      position: relative;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .screen {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      overflow-y: auto;
+      padding: 18px 18px 132px;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateX(38px) scale(0.985);
+      transition:
+        opacity 420ms ease,
+        transform 420ms cubic-bezier(.2, .8, .2, 1),
+        visibility 0s linear 420ms;
+      scrollbar-width: thin;
+    }
+
+    .screen.active {
+      z-index: 2;
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: translateX(0) scale(1);
+      transition-delay: 0s;
+    }
+
+    .screen-content {
+      width: 100%;
+      max-width: 590px;
+      margin: 0 auto;
+    }
+
+    .screen-header {
+      display: grid;
+      justify-items: center;
+      margin-bottom: 12px;
+    }
+
+    .app-logo {
+      display: block;
+      width: 122px;
+      height: 92px;
+      object-fit: contain;
+      filter: drop-shadow(0 9px 12px rgba(211, 47, 47, 0.12));
+    }
+
+    .eyebrow {
+      margin: -1px 0 7px;
+      color: var(--red);
+      font-size: 0.74rem;
+      font-weight: 850;
+      letter-spacing: 0.13em;
+      text-align: center;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 8px;
+      font-size: clamp(1.65rem, 6vw, 2.25rem);
+      line-height: 1.12;
+      letter-spacing: -0.045em;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 7px;
+      font-size: clamp(1.4rem, 5vw, 1.85rem);
+      letter-spacing: -0.03em;
+    }
+
+    h3 {
+      font-size: 1.05rem;
+    }
+
+    .intro,
+    .helper-text {
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.52;
+    }
+
+    .intro {
+      max-width: 440px;
+      margin: 0 auto 22px;
+      text-align: center;
+    }
+
+    .card {
+      padding: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.78);
+      border-radius: 25px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+
+    .card + .card,
+    .card + .section-gap {
+      margin-top: 15px;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      min-height: 52px;
+      border: 0;
+      border-radius: 16px;
+      cursor: pointer;
+      touch-action: manipulation;
+      transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible {
+      outline: 4px solid rgba(211, 47, 47, 0.22);
+      outline-offset: 2px;
+    }
+
+    .profile-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .profile-choice {
+      min-height: 96px;
+      padding: 16px 10px;
+      border: 2px solid rgba(211, 47, 47, 0.12);
+      color: #4a2424;
+      background: rgba(255, 255, 255, 0.8);
+      font-size: 1.02rem;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .profile-choice:hover,
+    .profile-choice.selected {
+      border-color: var(--red);
+      color: #fff;
+      background: linear-gradient(135deg, var(--red), #e94444);
+      box-shadow: 0 10px 24px rgba(211, 47, 47, 0.25);
+    }
+
+    .profile-preview {
+      display: grid;
+      grid-template-columns: 85px 1fr;
+      gap: 15px;
+      align-items: center;
+      margin: 17px 0 20px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255, 250, 247, 0.82);
+    }
+
+    .profile-image {
+      width: 85px;
+      height: 85px;
+      border: 3px solid #fff;
+      border-radius: 18px;
+      object-fit: cover;
+      box-shadow: 0 7px 18px rgba(68, 37, 34, 0.16);
+    }
+
+    .profile-preview p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.91rem;
+      line-height: 1.35;
+    }
+
+    .fields-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+      color: #344054;
+      font-size: 0.93rem;
+      font-weight: 800;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      min-height: 54px;
+      padding: 0 14px;
+      border: 1.5px solid #e8d9d5;
+      border-radius: 14px;
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.95);
+      font-size: 1.05rem;
+      font-weight: 650;
+      transition: border-color 160ms ease, box-shadow 160ms ease;
+    }
+
+    .field input:focus,
+    .field select:focus {
+      border-color: var(--red);
+      box-shadow: 0 0 0 4px rgba(211, 47, 47, 0.1);
+      outline: none;
+    }
+
+    .field input.is-invalid,
+    .field select.is-invalid,
+    .reading-input.is-invalid {
+      border-color: var(--red) !important;
+      box-shadow: 0 0 0 4px rgba(211, 47, 47, 0.12);
+    }
+
+    .primary-button {
+      width: 100%;
+      min-height: 59px;
+      margin-top: 20px;
+      color: #fff;
+      background: linear-gradient(135deg, #b92424, #e53d3d);
+      box-shadow: 0 13px 25px rgba(211, 47, 47, 0.28);
+      font-size: 1.08rem;
+      font-weight: 850;
+    }
+
+    .primary-button:hover {
+      box-shadow: 0 16px 30px rgba(211, 47, 47, 0.36);
+      transform: translateY(-2px);
+    }
+
+    .primary-button.massive {
+      min-height: 70px;
+      font-size: 1.1rem;
+    }
+
+    .primary-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.66;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .secondary-button,
+    .text-button {
+      color: var(--red-dark);
+      background: rgba(255, 255, 255, 0.72);
+      font-weight: 800;
+    }
+
+    .secondary-button {
+      width: 100%;
+      margin-top: 12px;
+      border: 1px solid rgba(211, 47, 47, 0.2);
+    }
+
+    .text-button {
+      min-height: auto;
+      padding: 8px 3px;
+      color: #7b3838;
+      background: transparent;
+      font-size: 0.94rem;
+    }
+
+    .back-row {
+      margin-bottom: 8px;
+    }
+
+    .reading-list {
+      display: grid;
+      gap: 13px;
+      margin-top: 18px;
+    }
+
+    .reading-card {
+      display: grid;
+      grid-template-columns: 44px 1fr 1fr;
+      gap: 10px;
+      align-items: end;
+      padding: 14px;
+      border: 1px solid rgba(211, 47, 47, 0.12);
+      border-radius: 19px;
+      background: rgba(255, 255, 255, 0.83);
+    }
+
+    .reading-number {
+      display: grid;
+      width: 39px;
+      height: 39px;
+      place-items: center;
+      border-radius: 50%;
+      color: var(--red-dark);
+      background: var(--red-soft);
+      font-size: 0.88rem;
+      font-weight: 900;
+    }
+
+    .reading-field {
+      display: grid;
+      gap: 6px;
+      color: #52606d;
+      font-size: 0.76rem;
+      font-weight: 850;
+    }
+
+    .reading-input {
+      width: 100%;
+      min-width: 0;
+      min-height: 55px;
+      padding: 0 10px;
+      border: 1.5px solid #ecdeda;
+      border-radius: 13px;
+      color: var(--ink);
+      background: #fff;
+      font-size: 1.17rem;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .reading-input:focus {
+      border-color: var(--red);
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(211, 47, 47, 0.1);
+    }
+
+    .reading-input::placeholder {
+      color: #a7afb8;
+      font-size: 0.82rem;
+      font-weight: 650;
+    }
+
+    .results-averages {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 15px;
+    }
+
+    .average-card {
+      padding: 17px 10px;
+      border: 1px solid rgba(211, 47, 47, 0.12);
+      border-radius: 20px;
+      background: linear-gradient(145deg, #fff, #fff4f0);
+      text-align: center;
+    }
+
+    .average-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.79rem;
+      font-weight: 850;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .average-card strong {
+      display: block;
+      margin-top: 5px;
+      color: var(--red-dark);
+      font-size: clamp(2.4rem, 11vw, 4rem);
+      line-height: 0.95;
+      letter-spacing: -0.07em;
+    }
+
+    .average-card small {
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 750;
+    }
+
+    .status-card {
+      padding: 20px;
+      border: 1px solid transparent;
+      border-radius: 21px;
+    }
+
+    .status-card.normal {
+      border-color: #bde7cc;
+      background: var(--green-soft);
+      color: #115c38;
+    }
+
+    .status-card.low {
+      border-color: #d4c48b;
+      background: var(--yellow-soft);
+      color: #765300;
+    }
+
+    .status-card.high {
+      border-color: #ecd47d;
+      background: #fff5cb;
+      color: #825a00;
+    }
+
+    .status-card.danger,
+    .status-card.critical {
+      border-color: #f5aaaa;
+      color: #fff;
+      background: linear-gradient(135deg, #b71919, #e53935);
+      box-shadow: 0 12px 25px rgba(211, 47, 47, 0.27);
+      animation: dangerPulse 1.1s ease-in-out infinite;
+    }
+
+    .status-card.critical {
+      background: linear-gradient(135deg, #7f1010, #d32f2f);
+    }
+
+    .status-label {
+      display: inline-block;
+      margin-bottom: 9px;
+      font-size: 0.76rem;
+      font-weight: 900;
+      letter-spacing: 0.13em;
+    }
+
+    .status-card h2 {
+      margin-bottom: 9px;
+      font-size: clamp(1.45rem, 6vw, 2rem);
+    }
+
+    .status-card p {
+      margin-bottom: 0;
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.5;
+    }
+
+    @keyframes dangerPulse {
+      0%, 100% { box-shadow: 0 10px 20px rgba(211, 47, 47, 0.2); }
+      50% { box-shadow: 0 15px 35px rgba(211, 47, 47, 0.55); }
+    }
+
+    .alarm-stop {
+      width: 100%;
+      margin-top: 13px;
+      color: #8c1717;
+      background: #fff;
+      font-weight: 900;
+    }
+
+    .medical-note {
+      margin: 15px 0 0;
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.45;
+      text-align: center;
+    }
+
+    .app-footer {
+      position: fixed;
+      z-index: 20;
+      right: 50%;
+      bottom: max(13px, env(safe-area-inset-bottom));
+      display: flex;
+      width: min(calc(100% - 28px), 520px);
+      min-height: 54px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 8px 10px 8px 17px;
+      border: 1px solid rgba(255, 255, 255, 0.84);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.86);
+      box-shadow: 0 10px 28px rgba(89, 48, 40, 0.16);
+      backdrop-filter: blur(16px);
+      transform: translateX(50%);
+    }
+
+    .app-footer span {
+      color: #5d4a47;
+      font-size: 0.9rem;
+      font-weight: 800;
+    }
+
+    .contact-button {
+      min-height: 37px;
+      padding: 0 14px;
+      color: #fff;
+      background: var(--red);
+      font-size: 0.83rem;
+      font-weight: 850;
+    }
+
+    .toast {
+      position: fixed;
+      z-index: 200;
+      top: 20px;
+      left: 50%;
+      width: min(calc(100% - 36px), 430px);
+      padding: 14px 17px;
+      border-radius: 15px;
+      color: #fff;
+      background: #263238;
+      box-shadow: 0 12px 28px rgba(38, 50, 56, 0.22);
+      font-size: 0.95rem;
+      font-weight: 750;
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, -18px);
+      transition: opacity 240ms ease, transform 240ms ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    .success-overlay {
+      position: fixed;
+      z-index: 300;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: rgba(54, 32, 29, 0.36);
+      backdrop-filter: blur(8px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 260ms ease;
+    }
+
+    .success-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .success-modal {
+      position: relative;
+      width: min(100%, 390px);
+      overflow: hidden;
+      padding: 30px 24px 24px;
+      border-radius: 28px;
+      background: #fffdf9;
+      box-shadow: 0 25px 65px rgba(66, 35, 29, 0.3);
+      text-align: center;
+      transform: translateY(22px) scale(0.94);
+      transition: transform 340ms cubic-bezier(.2, .9, .2, 1);
+    }
+
+    .success-overlay.show .success-modal {
+      transform: translateY(0) scale(1);
+    }
+
+    .check-circle {
+      display: grid;
+      width: 82px;
+      height: 82px;
+      place-items: center;
+      margin: 0 auto 16px;
+      border-radius: 50%;
+      background: #e6f8ed;
+    }
+
+    .checkmark {
+      width: 27px;
+      height: 48px;
+      border-right: 7px solid #1a8b50;
+      border-bottom: 7px solid #1a8b50;
+      transform: rotate(45deg) translate(-4px, -3px) scale(0);
+      transform-origin: center;
+    }
+
+    .success-overlay.show .checkmark {
+      animation: drawCheck 530ms 180ms cubic-bezier(.2, .9, .2, 1) forwards;
+    }
+
+    @keyframes drawCheck {
+      to { transform: rotate(45deg) translate(-4px, -3px) scale(1); }
+    }
+
+    .success-modal h2 {
+      margin-bottom: 8px;
+      color: #176c42;
+    }
+
+    .success-modal p {
+      margin-bottom: 19px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .confetti {
+      position: absolute;
+      top: -14px;
+      width: 10px;
+      height: 18px;
+      border-radius: 4px;
+      animation: confettiFall 1.8s ease-in forwards;
+    }
+
+    @keyframes confettiFall {
+      from { transform: translateY(0) rotate(0deg); opacity: 1; }
+      to { transform: translateY(340px) rotate(620deg); opacity: 0; }
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    @media (max-width: 390px) {
+      .screen {
+        padding-inline: 13px;
+      }
+
+      .card {
+        padding: 17px;
+        border-radius: 21px;
+      }
+
+      .reading-card {
+        grid-template-columns: 36px 1fr 1fr;
+        gap: 7px;
+        padding: 11px;
+      }
+
+      .reading-number {
+        width: 34px;
+        height: 34px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="ambient-orb one"></div>
+  <div class="ambient-orb two"></div>
+  <div id="trail-layer" aria-hidden="true"></div>
+
+  <audio id="clickSound" preload="auto" src="data:audio/wav;base64,UklGRvQCAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YdACAACAqcjW0LiTaUYwLT1chKrG0sqyjmdGMzJDYoerxM7FrIplRzc3SWeKq8LJv6eGY0g6PE5rjazAxbqigmJJPUFTb4+svcG1nX9hS0FFWHORq7u9sZl8YExESlx3k6u5uayVemBOR05gepWqtrWokndfT0pSZH2WqbSypI52X1FOVmh/l6mxrqCLdF9TUVlrgZeor6udiXNgVVRdboSYpqynmoZxYFZWYHGFmKWqpJeEcGFYWWN0h5ikp6GUgnBhWlxmdoiYo6WfkYBvYlxeaXiJmKGjnI9+bmNeYWt6ipigoJmNfW5kYGNufIuYn56Xi3xuZGFmcH6Ml52clYl7bmVjaHJ/jJecmpOHem5mZWp0gI2WmpiRhXluZ2dsdoKNlpmXj4R4bmhobneDjZWYlY2Dd25pam95hI6UlpOMgXdva2txeoSOlJWSioB3b2xtc3uFjpOUkIl/dnBtbnR8ho2Sk4+Hf3ZwbnB1fYaNkZGNhn52cG9xd36HjZGQjIV9dnFwcnh/h42Qj4uEfXZycXN5gIeNj46Kg3x2cnJ0eoGHjI6NiYJ8dnNydXuBh4yNjIiCe3Zzc3Z8goiLjYuHgXt2dHR3fIKIi4yKhoB7dnR1eH2DiIuLiYWAe3d1dnl+g4iKi4iEf3p3dnd6foOHioqIhH96d3Z3en+Eh4mJh4N/enh3eHt/hIeJiYaDfnp4d3l8gISHiYiGgn56eHh5fICEh4iHhYF+enh4en2BhIeIh4SBfXp5eXp9gYSGh4aEgX17eXl7foGEhoeGg4B9e3l6e36BhIaGhYOAfXt6enx/goSGhoWDgH17ent8f4KEhoaEgn99e3p7fX+ChIWFhIJ/fXt7e32AgoSFhYSBf317e3x+gIKEhYWDgX99fHt8foCChIWEg4F/fXx8fH6AgoSEhIOBf318fH1+gIKEhISCgH99fHx9f4GChISDgoB+fXw="></audio>
+  <audio id="alarmSound" loop preload="auto" src="data:audio/wav;base64,UklGRuQDAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YcADAACAvOf247V3PBQLI1aVzvDz1J1dKAwSOXSz4/bmt3g7EwwnXp/W9O7GiUkaCh9Sk87y8c2RTx0KHU+RzfHxzI9MGwogVZjU9O7Dg0EUDCplqd/25bFtLw0SPX/B7fPSlE8bCiNcotz25bFrLQwVRInL8u/FgT0RDjR3vez00I9IFgwtbbXo9dWVTRgLK2u06PXUk0oWDC9yuuzzzYhAEQ85gMfx7r92MQwWTJbY9uOnXB8KJmiz6vTNhj0PEkOO0/Xlql0fCiltue3xxHoxDBlTouH21pBDERBCj9X24aBRFw03gs305qlZGwsyfMnz6KxcHAsyfcr056lYGQw2hND14p9OFA9Bktr22I8/DhZSpeb0yHgsCiNrvvHrr1saDTqM1/bYjTsNGl2y7e+4Yx0MN4nW9teKNwweZbrx6qtUFRBHnuT0xXAkCjKE1PbWhzMLI3DF9OKZQQ0aYLnx6aVMERVXsO7srFITE1Ks7e6uVBMTUq3t7axREhVXsu/qpEkPGWG88+OYPQwhccr22YUvCi+G2fXIbh8NQ5/o8LBSERdfvPPhkDUKK4LY9cdqHA5Lqu7qoEIMI3fR9s1xHw1Iqe7pnj8LJn7X9cRlGBJWuPPgiy4KN5bm76tJDSF31PbFZBcTXL/12H0kDEeq7+WTMwo2mOjto0ALK4ng8rBLDSN+2vS4Uw8fd9b1vVcQHXTU9b5YEB111fW8VQ8fedn0tk8NJILf8q1FCyyP5u2fOAo4n+7ljSoMSbP02HYcEmDI9sVdER983PKrQQo0m+3liicNUr32zWUTHHjb8qo/Cjij8N9+HhFizPa7TgwslOvmiSUPWsb2wFIMK5Pr5YcjEF/L9bhKCzOg8N13GRdy2vKkNgtIuPbJWg4okuzjgR0UbdjypDULTb72wVALMqHx2G0TH4bn6IcgE23Z8Z4vDFfJ9bI/Cka59sFOCzir9M1cDS6f8dZnECeV79xvEyKO7OB1FR+K6uJ3Fh6I6uJ3Fh+K6+B0FCGO7d1uEiWW8NdmDyyg889aDDas9cRNCkK79rY9C1PL9KMtD2ja7Y0eGIDo4nMSJ5vyz1cLPbf2tTsLWtLxlSIWfejhcBAro/TFSgpNyPSfKBJ35eNyESyl9cJFClTQ8ZMfGYjt114LPrz2qS4Qc+Xibw8xr/a1Nw1p3+d3ES2q9rg5DWjg5nUQMK72sjMPceXgaQ06u/WjJxaE7tNUCk/P8IkXJaH1uzkObuXgZgxBxPOVHR+Z9L88DW3l32MLRcnxjBgmpfayLxI="></audio>
+
+  <main class="app-shell">
+    <div class="screen-stage">
+      <section class="screen active" id="setupScreen" aria-labelledby="setupHeading">
+        <div class="screen-content">
+          <header class="screen-header">
+            <img src="logo.png" alt="App Logo" class="app-logo" />
+            <p class="eyebrow">BP CARE • DAILY LOG</p>
+            <h1 id="setupHeading">BP Measurement Tracker</h1>
+            <p class="intro">A simple, clear way to record three blood-pressure readings and track the average.</p>
+          </header>
+
+          <div class="card">
+            <h2>Who is being checked?</h2>
+
+            <div class="profile-options">
+              <button type="button" class="profile-choice" data-patient="nana">Ramchandra<br />Yadav</button>
+              <button type="button" class="profile-choice" data-patient="other">Other</button>
+            </div>
+
+            <div id="profilePanel" hidden>
+              <div class="profile-preview">
+                <img id="profileImage" class="profile-image" src="" alt="" />
+                <div>
+                  <strong id="profileName"></strong>
+                  <p id="profileDescription"></p>
+                </div>
+              </div>
+
+              <div class="fields-grid">
+                <label class="field full">
+                  <span>Date</span>
+                  <input id="measurementDate" type="date" required />
+                </label>
+
+                <label class="field">
+                  <span>Month</span>
+                  <select id="measurementMonth" required>
+                    <option value="">Select month</option>
+                    <option value="01">January</option>
+                    <option value="02">February</option>
+                    <option value="03">March</option>
+                    <option value="04">April</option>
+                    <option value="05">May</option>
+                    <option value="06">June</option>
+                    <option value="07">July</option>
+                    <option value="08">August</option>
+                    <option value="09">September</option>
+                    <option value="10">October</option>
+                    <option value="11">November</option>
+                    <option value="12">December</option>
+                  </select>
+                </label>
+
+                <label class="field">
+                  <span>Year</span>
+                  <input id="measurementYear" type="number" inputmode="numeric" min="1900" max="2100" placeholder="2026" required />
+                </label>
+
+                <label class="field full">
+                  <span>Time of Day</span>
+                  <select id="timeOfDay" required>
+                    <option value="">Select time</option>
+                    <option value="Morning">Morning</option>
+                    <option value="Afternoon">Afternoon</option>
+                    <option value="Evening">Evening</option>
+                  </select>
+                </label>
+
+                <label class="field full" id="genderField" hidden>
+                  <span>Gender</span>
+                  <select id="gender">
+                    <option value="">Select gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+
+            <button type="button" id="nextButton" class="primary-button">Next: Add Readings</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="readingsScreen" aria-labelledby="readingsHeading">
+        <div class="screen-content">
+          <div class="back-row">
+            <button type="button" class="text-button" id="backToSetup">← Back to details</button>
+          </div>
+
+          <header class="screen-header">
+            <img src="logo.png" alt="App Logo" class="app-logo" />
+            <p class="eyebrow">STEP 2 OF 3</p>
+            <h1 id="readingsHeading">Enter 3 Readings</h1>
+            <p class="intro">Take a moment between readings, then enter each systolic and diastolic value.</p>
+          </header>
+
+          <div class="card">
+            <div class="reading-list">
+              <div class="reading-card">
+                <span class="reading-number">01</span>
+                <label class="reading-field">SYSTOLIC
+                  <input class="reading-input" id="r1Sys" type="number" inputmode="numeric" min="1" max="300" step="1" placeholder="e.g. 120" />
+                </label>
+                <label class="reading-field">DIASTOLIC
+                  <input class="reading-input" id="r1Dia" type="number" inputmode="numeric" min="1" max="200" step="1" placeholder="e.g. 80" />
+                </label>
+              </div>
+
+              <div class="reading-card">
+                <span class="reading-number">02</span>
+                <label class="reading-field">SYSTOLIC
+                  <input class="reading-input" id="r2Sys" type="number" inputmode="numeric" min="1" max="300" step="1" placeholder="e.g. 120" />
+                </label>
+                <label class="reading-field">DIASTOLIC
+                  <input class="reading-input" id="r2Dia" type="number" inputmode="numeric" min="1" max="200" step="1" placeholder="e.g. 80" />
+                </label>
+              </div>
+
+              <div class="reading-card">
+                <span class="reading-number">03</span>
+                <label class="reading-field">SYSTOLIC
+                  <input class="reading-input" id="r3Sys" type="number" inputmode="numeric" min="1" max="300" step="1" placeholder="e.g. 120" />
+                </label>
+                <label class="reading-field">DIASTOLIC
+                  <input class="reading-input" id="r3Dia" type="number" inputmode="numeric" min="1" max="200" step="1" placeholder="e.g. 80" />
+                </label>
+              </div>
+            </div>
+
+            <button type="button" id="calculateButton" class="primary-button massive">Calculate Average &amp; View Results</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="resultsScreen" aria-labelledby="resultsHeading">
+        <div class="screen-content">
+          <div class="back-row">
+            <button type="button" class="text-button" id="backToReadings">← Edit readings</button>
+          </div>
+
+          <header class="screen-header">
+            <img src="logo.png" alt="App Logo" class="app-logo" />
+            <p class="eyebrow">RESULTS</p>
+            <h1 id="resultsHeading">Your BP Average</h1>
+          </header>
+
+          <div class="card">
+            <div class="results-averages">
+              <div class="average-card">
+                <span>Average Systolic</span>
+                <strong id="avgSysValue">--</strong>
+                <small>mmHg</small>
+              </div>
+              <div class="average-card">
+                <span>Average Diastolic</span>
+                <strong id="avgDiaValue">--</strong>
+                <small>mmHg</small>
+              </div>
+            </div>
+
+            <div id="statusCard" class="status-card normal" aria-live="polite">
+              <span class="status-label">STATUS</span>
+              <h2 id="statusTitle">Awaiting calculation</h2>
+              <p id="statusText">Your result and precaution will appear here.</p>
+            </div>
+
+            <button type="button" id="stopAlarmButton" class="alarm-stop" hidden>Stop Alarm</button>
+
+            <p class="medical-note">This tracker supports record keeping and does not replace professional medical advice.</p>
+
+            <button type="button" id="saveButton" class="primary-button massive">Save to Tracker</button>
+            <button type="button" id="newMeasurementButton" class="secondary-button">Start a New Measurement</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="app-footer">
+    <span>Made by Yash</span>
+    <button type="button" class="contact-button" id="contactButton">Contact</button>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <div class="success-overlay" id="successOverlay" role="dialog" aria-modal="true" aria-labelledby="successTitle">
+    <div class="success-modal" id="successModal">
+      <div class="check-circle"><div class="checkmark"></div></div>
+      <h2 id="successTitle">Saved Successfully</h2>
+      <p>Your blood-pressure measurement has been sent to the tracker.</p>
+      <button type="button" id="successNewButton" class="primary-button">Record Another Measurement</button>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbweyZUAnBtIT1ktrrEF6JIPn2Vh7VD-yJRrHAhFALBMNSrls88-lAb-PIM7X_jOyBWy/exec";
+
+    const state = {
+      patientType: null,
+      readings: null,
+      avgSys: null,
+      avgDia: null,
+      evaluation: null
+    };
+
+    const profiles = {
+      nana: {
+        name: "Ramchandra Yadav",
+        image: "nana.jpg",
+        alt: "Ramchandra Yadav (Nana)",
+        description: "Personal blood-pressure record"
+      },
+      other: {
+        name: "Other Profile",
+        image: "misc.jpg",
+        alt: "Misc Profile",
+        description: "Record a blood-pressure measurement"
+      }
+    };
+
+    const elements = {
+      screens: document.querySelectorAll(".screen"),
+      profileButtons: document.querySelectorAll(".profile-choice"),
+      profilePanel: document.getElementById("profilePanel"),
+      profileImage: document.getElementById("profileImage"),
+      profileName: document.getElementById("profileName"),
+      profileDescription: document.getElementById("profileDescription"),
+      date: document.getElementById("measurementDate"),
+      month: document.getElementById("measurementMonth"),
+      year: document.getElementById("measurementYear"),
+      time: document.getElementById("timeOfDay"),
+      gender: document.getElementById("gender"),
+      genderField: document.getElementById("genderField"),
+      nextButton: document.getElementById("nextButton"),
+      calculateButton: document.getElementById("calculateButton"),
+      saveButton: document.getElementById("saveButton"),
+      avgSys: document.getElementById("avgSysValue"),
+      avgDia: document.getElementById("avgDiaValue"),
+      statusCard: document.getElementById("statusCard"),
+      statusTitle: document.getElementById("statusTitle"),
+      statusText: document.getElementById("statusText"),
+      stopAlarmButton: document.getElementById("stopAlarmButton"),
+      toast: document.getElementById("toast"),
+      clickSound: document.getElementById("clickSound"),
+      alarmSound: document.getElementById("alarmSound"),
+      successOverlay: document.getElementById("successOverlay"),
+      trailLayer: document.getElementById("trail-layer")
+    };
+
+    let toastTimer;
+    let lastTrailTime = 0;
+
+    function showScreen(id) {
+      elements.screens.forEach((screen) => {
+        screen.classList.toggle("active", screen.id === id);
+      });
+    }
+
+    function showToast(message) {
+      clearTimeout(toastTimer);
+      elements.toast.textContent = message;
+      elements.toast.classList.add("show");
+      toastTimer = setTimeout(() => elements.toast.classList.remove("show"), 2600);
+    }
+
+    function playClick() {
+      try {
+        elements.clickSound.currentTime = 0;
+        elements.clickSound.volume = 0.32;
+        elements.clickSound.play().catch(() => {});
+      } catch (_) {}
+    }
+
+    function startAlarm() {
+      try {
+        elements.alarmSound.currentTime = 0;
+        elements.alarmSound.volume = 0.82;
+        elements.alarmSound.play().catch(() => {});
+      } catch (_) {}
+    }
+
+    function stopAlarm() {
+      elements.alarmSound.pause();
+      elements.alarmSound.currentTime = 0;
+    }
+
+    function clearInvalidFields() {
+      document.querySelectorAll(".is-invalid").forEach((field) => field.classList.remove("is-invalid"));
+    }
+
+    function selectProfile(patientType) {
+      state.patientType = patientType;
+      const profile = profiles[patientType];
+
+      elements.profileButtons.forEach((button) => {
+        button.classList.toggle("selected", button.dataset.patient === patientType);
+      });
+
+      elements.profilePanel.hidden = false;
+      elements.profileImage.src = profile.image;
+      elements.profileImage.alt = profile.alt;
+      elements.profileName.textContent = profile.name;
+      elements.profileDescription.textContent = profile.description;
+      elements.genderField.hidden = patientType !== "other";
+
+      if (patientType !== "other") {
+        elements.gender.value = "";
+      }
+
+      clearInvalidFields();
+    }
+
+    function syncMonthAndYearFromDate() {
+      if (!elements.date.value) return;
+
+      const [year, month] = elements.date.value.split("-");
+      elements.month.value = month;
+      elements.year.value = year;
+      elements.month.classList.remove("is-invalid");
+      elements.year.classList.remove("is-invalid");
+    }
+
+    function validateSetup() {
+      clearInvalidFields();
+
+      if (!state.patientType) {
+        showToast("Please choose a profile first.");
+        return false;
+      }
+
+      const fields = [elements.date, elements.month, elements.year, elements.time];
+      if (state.patientType === "other") fields.push(elements.gender);
+
+      const emptyFields = fields.filter((field) => !field.value);
+      if (emptyFields.length) {
+        emptyFields.forEach((field) => field.classList.add("is-invalid"));
+        showToast("Please complete all required details.");
+        return false;
+      }
+
+      const [selectedYear, selectedMonth] = elements.date.value.split("-");
+      if (elements.month.value !== selectedMonth || String(elements.year.value) !== selectedYear) {
+        elements.month.classList.add("is-invalid");
+        elements.year.classList.add("is-invalid");
+        showToast("Month and year must match the selected date.");
+        return false;
+      }
+
+      return true;
+    }
+
+    function getReadingInputs() {
+      return [
+        document.getElementById("r1Sys"),
+        document.getElementById("r1Dia"),
+        document.getElementById("r2Sys"),
+        document.getElementById("r2Dia"),
+        document.getElementById("r3Sys"),
+        document.getElementById("r3Dia")
+      ];
+    }
+
+    function validateReadings() {
+      const inputs = getReadingInputs();
+      inputs.forEach((input) => input.classList.remove("is-invalid"));
+
+      const invalidInputs = inputs.filter((input) => {
+        const value = Number(input.value);
+        return input.value === "" || !Number.isFinite(value) || value < 1 || value > Number(input.max);
+      });
+
+      if (invalidInputs.length) {
+        invalidInputs.forEach((input) => input.classList.add("is-invalid"));
+        showToast("Please enter valid values for all 3 readings.");
+        return false;
+      }
+
+      state.readings = inputs.map((input) => Number(input.value));
+      return true;
+    }
+
+    function evaluateBP(sys, dia) {
+      if (sys < 60) {
+        return {
+          status: "Extreme Low",
+          level: "critical",
+          alarm: true,
+          message: "CRITICAL LOW! System failure risk. Call an ambulance immediately."
+        };
+      }
+
+      if (sys > 170 || dia > 110) {
+        return {
+          status: "Extreme High",
+          level: "critical",
+          alarm: true,
+          message: "EXTREME DANGER! High risk of stroke or heart attack. Call emergency services right now!"
+        };
+      }
+
+      if ((sys >= 141 && sys <= 170) || (dia >= 91 && dia <= 110)) {
+        return {
+          status: "Very High",
+          level: "danger",
+          alarm: true,
+          message: "Critical high blood pressure! Contact a doctor immediately. Do not exert yourself."
+        };
+      }
+
+      if ((sys >= 121 && sys <= 140) || (dia >= 81 && dia <= 90)) {
+        return {
+          status: "High",
+          level: "high",
+          alarm: false,
+          message: "Elevated readings. Monitor diet and reduce salt intake."
+        };
+      }
+
+      if (sys >= 100 && sys <= 120 && dia >= 70 && dia <= 80) {
+        return {
+          status: "Normal",
+          level: "normal",
+          alarm: false,
+          message: "Optimal blood pressure. Keep up the healthy routine!"
+        };
+      }
+
+      if (sys >= 60 && sys <= 89 && dia < 60) {
+        return {
+          status: "Very Low",
+          level: "danger",
+          alarm: true,
+          message: "Seek immediate medical attention. Drink fluids if conscious."
+        };
+      }
+
+      if ((sys >= 90 && sys <= 100) || (dia >= 60 && dia <= 70) || sys < 100 || dia < 70) {
+        return {
+          status: "Low",
+          level: "low",
+          alarm: false,
+          message: "Blood pressure is on the lower side. Rest and stay hydrated."
+        };
+      }
+
+      return {
+        status: "High",
+        level: "high",
+        alarm: false,
+        message: "Elevated readings. Monitor diet and reduce salt intake."
+      };
+    }
+
+    function calculateResults() {
+      if (!validateReadings()) return;
+
+      stopAlarm();
+
+      const [r1Sys, r1Dia, r2Sys, r2Dia, r3Sys, r3Dia] = state.readings;
+      state.avgSys = Math.round((r1Sys + r2Sys + r3Sys) / 3);
+      state.avgDia = Math.round((r1Dia + r2Dia + r3Dia) / 3);
+      state.evaluation = evaluateBP(state.avgSys, state.avgDia);
+
+      elements.avgSys.textContent = state.avgSys;
+      elements.avgDia.textContent = state.avgDia;
+      elements.statusCard.className = `status-card ${state.evaluation.level}`;
+      elements.statusTitle.textContent = state.evaluation.status;
+      elements.statusText.textContent = state.evaluation.message;
+      elements.stopAlarmButton.hidden = !state.evaluation.alarm;
+      elements.saveButton.disabled = false;
+      elements.saveButton.textContent = "Save to Tracker";
+
+      showScreen("resultsScreen");
+
+      if (state.evaluation.alarm) {
+        setTimeout(startAlarm, 220);
+      }
+    }
+
+    function buildPayload() {
+      const [year, month, day] = elements.date.value.split("-");
+      const localDate = new Date(Number(year), Number(month) - 1, Number(day), 12);
+      const weekdayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      const [r1Sys, r1Dia, r2Sys, r2Dia, r3Sys, r3Dia] = state.readings;
+
+      const payload = {
+        patientType: state.patientType,
+        date: `${day}-${month}-${year}`,
+        day: weekdayNames[localDate.getDay()],
+        timeOfDay: elements.time.value,
+        r1Sys,
+        r1Dia,
+        r2Sys,
+        r2Dia,
+        r3Sys,
+        r3Dia,
+        avgSys: state.avgSys,
+        avgDia: state.avgDia,
+        status: state.evaluation.status
+      };
+
+      if (state.patientType === "other") {
+        payload.gender = elements.gender.value;
+      }
+
+      return payload;
+    }
+
+    function createConfetti() {
+      const modal = document.getElementById("successModal");
+      modal.querySelectorAll(".confetti").forEach((piece) => piece.remove());
+
+      const colors = ["#D32F2F", "#f4b942", "#1a8b50", "#ff9087", "#6e7ee9"];
+      for (let i = 0; i < 28; i += 1) {
+        const piece = document.createElement("span");
+        piece.className = "confetti";
+        piece.style.left = `${Math.random() * 100}%`;
+        piece.style.background = colors[i % colors.length];
+        piece.style.animationDelay = `${Math.random() * 0.38}s`;
+        piece.style.transform = `rotate(${Math.random() * 180}deg)`;
+        modal.appendChild(piece);
+      }
+    }
+
+    async function saveToTracker() {
+      if (!state.evaluation || !state.readings) {
+        showToast("Please calculate the results first.");
+        return;
+      }
+
+      elements.saveButton.disabled = true;
+      elements.saveButton.textContent = "Saving…";
+
+      try {
+        await fetch(API_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+          },
+          body: JSON.stringify(buildPayload())
+        });
+
+        stopAlarm();
+        createConfetti();
+        elements.successOverlay.classList.add("show");
+        elements.saveButton.textContent = "Saved ✓";
+      } catch (_) {
+        elements.saveButton.disabled = false;
+        elements.saveButton.textContent = "Save to Tracker";
+        showToast("Could not save right now. Please check your connection and try again.");
+      }
+    }
+
+    function resetApp() {
+      stopAlarm();
+      state.patientType = null;
+      state.readings = null;
+      state.avgSys = null;
+      state.avgDia = null;
+      state.evaluation = null;
+
+      document.querySelectorAll("input").forEach((input) => {
+        if (input.type !== "date") input.value = "";
+        else input.value = "";
+      });
+
+      document.querySelectorAll("select").forEach((select) => {
+        select.value = "";
+      });
+
+      elements.profileButtons.forEach((button) => button.classList.remove("selected"));
+      elements.profilePanel.hidden = true;
+      elements.genderField.hidden = true;
+      elements.stopAlarmButton.hidden = true;
+      elements.successOverlay.classList.remove("show");
+      clearInvalidFields();
+      showScreen("setupScreen");
+    }
+
+    async function copyContactNumber() {
+      const number = "9060170251";
+
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(number);
+        } else {
+          const helper = document.createElement("textarea");
+          helper.value = number;
+          helper.style.position = "fixed";
+          helper.style.opacity = "0";
+          document.body.appendChild(helper);
+          helper.select();
+          document.execCommand("copy");
+          helper.remove();
+        }
+
+        showToast("Number Copied!");
+      } catch (_) {
+        showToast(`Contact number: ${number}`);
+      }
+    }
+
+    document.addEventListener("click", (event) => {
+      if (event.target.closest("button")) playClick();
+    }, true);
+
+    document.addEventListener("change", (event) => {
+      if (event.target.matches("select")) playClick();
+    });
+
+    elements.profileButtons.forEach((button) => {
+      button.addEventListener("click", () => selectProfile(button.dataset.patient));
+    });
+
+    elements.date.addEventListener("change", syncMonthAndYearFromDate);
+
+    elements.nextButton.addEventListener("click", () => {
+      if (validateSetup()) showScreen("readingsScreen");
+    });
+
+    elements.calculateButton.addEventListener("click", calculateResults);
+    elements.saveButton.addEventListener("click", saveToTracker);
+    elements.stopAlarmButton.addEventListener("click", stopAlarm);
+    document.getElementById("contactButton").addEventListener("click", copyContactNumber);
+
+    document.getElementById("backToSetup").addEventListener("click", () => showScreen("setupScreen"));
+    document.getElementById("backToReadings").addEventListener("click", () => {
+      stopAlarm();
+      showScreen("readingsScreen");
+    });
+
+    document.getElementById("newMeasurementButton").addEventListener("click", resetApp);
+    document.getElementById("successNewButton").addEventListener("click", resetApp);
+
+    document.addEventListener("pointermove", (event) => {
+      const now = performance.now();
+      if (now - lastTrailTime < 42) return;
+      lastTrailTime = now;
+
+      const dot = document.createElement("span");
+      dot.className = "touch-trail";
+      dot.style.left = `${event.clientX}px`;
+      dot.style.top = `${event.clientY}px`;
+      dot.style.color = Math.random() > 0.48 ? "#D32F2F" : "#f0b99e";
+      dot.style.background = "currentColor";
+      elements.trailLayer.appendChild(dot);
+
+      setTimeout(() => dot.remove(), 560);
+    }, { passive: true });
+  </script>
+</body>
+</html>
